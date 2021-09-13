@@ -41,13 +41,13 @@ interchangeable in the Meowlang source code.
 Meow tokens are case-insensitive. For example, `Meow`, `meow`, and `MEOW` are
 the same things.
 
-### The Default Text Representation
+### The Default Meow File Format
 
 The default text representation of a Meowlang source code uses semicolon `";"`
 to end every Meow element.
 
-For example, the following code contains 4 Meow elements, whose values are 0, 1,
-2, and 4.
+For example, the following code contains 5 Meow elements, whose values are 0, 1,
+2, 3 and 4.
 
 ```text
 ;
@@ -57,7 +57,7 @@ Meow Meow Meow;
 Meow Meow Meow Meow;
 ```
 
-White spaces including `" "`, `"\t"` and `"\n"` are sued for formatting purposes
+White spaces including `" "`, `"\t"` and `"\n"` are used for formatting purposes
 only, and will be ignored when the source code is executed. You may layout your
 code in many different and interesting ways. For example, the following code is
 an equivalent representation of the above code:
@@ -66,11 +66,23 @@ an equivalent representation of the above code:
 ; M e o w ; MeowMeow ; MeowMeowMeow ; MeowMeowMeowMeow ;
 ```
 
-### The Simplified Text Representation
+The Meow tokens in the supported languages can be mixed in the same source code.
+For example:
 
-For debugging and serialization, a Meow source code can also be recorded as a
-sequence of non-negative integer numbers, each number corresponding to the value
-of a Meow element. For example:
+```text
+;
+喵;
+Meow Miao;
+Miaou Miaou Miaou;
+Miaou 喵 Meow Miao;
+```
+
+The preferred file extension of the default Meow file format is `".meow"`.
+
+### The Simplified Meow File Format
+
+A Meow source code can also be recorded as a sequence of non-negative integer
+numbers, each number corresponding to the value of a Meow element. For example:
 
 ```text
 0
@@ -79,6 +91,8 @@ of a Meow element. For example:
 3
 4
 ```
+
+The preferred file extension of the simplified Meow file format is `".smeow"`.
 
 ### The Meow Instruction Set
 

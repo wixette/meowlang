@@ -155,10 +155,13 @@ function execute(meowList,
       opname: 'MEOW',
       operand: undefinedOperand,
       action: (ip) => {
-        if (meowCallback != undefined) {
-          meowCallback();
-        } else {
-          console.log(CAT_EMOJI);
+        const tail = meowList[meowList.length - 1];
+        for (let i = 0; i < tail; i++) {
+          if (meowCallback != undefined) {
+            meowCallback();
+          } else {
+            console.log(CAT_EMOJI);
+          }
         }
         return ip + 1;
       },

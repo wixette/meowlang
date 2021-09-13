@@ -13,5 +13,8 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0"
+  },
+  "dependencies": {
+    "yargs": "^17.1.1"
   }
 }

@@ -4,11 +4,11 @@ Meowlang is an esoteric programming language designed for cats.
 
 ## Language Specification
 
-### The Meow List
+### Meow List
 
-A valid Meowlang source code is simply a text representation of the Meow List.
+A valid Meowlang source code is simply a text representation of a Meow List.
 
-The Meow List is a sequence of Meow elements.
+A Meow List is a sequence of Meow elements.
 
 Every Meow element contains zero or more Meow tokens. The number of Meow tokens
 in a Meow element corresponds to a non-negative integer value, which is the
@@ -22,9 +22,9 @@ depending on the execution context:
 * When a Meow element is treated as a Meow operand, the operand value is the
   value of the element.
 
-In the Meowlang runtime, the Meow List is a read/write list, which is both the
-list of Meow instructions, and the only in-memory data structure that Meow
-instructions can access.
+In the Meowlang runtime, the loaded Meow List is a read/write list, which is
+both a list of Meow instructions, and the only in-memory data structure that
+Meow instructions can access.
 
 In other words, code is data and data is code.
 
@@ -41,10 +41,10 @@ interchangeable in the Meowlang source code.
 Meow tokens are case-insensitive. For example, `Meow`, `meow`, and `MEOW` are
 the same things.
 
-### The Default Meow File Format
+### Meow File Format
 
-The default text representation of a Meowlang source code uses semicolon `";"`
-to end every Meow element.
+The text representation of a Meowlang source code uses semicolon `";"` to end
+every Meow element.
 
 For example, the following code contains 5 Meow elements, whose values are 0, 1,
 2, 3 and 4.
@@ -66,7 +66,7 @@ an equivalent representation of the above code:
 ; M e o w ; MeowMeow ; MeowMeowMeow ; MeowMeowMeowMeow ;
 ```
 
-The Meow tokens in the supported languages can be mixed in the same source code.
+The Meow tokens in the supported languages can be mixed in a same source code.
 For example:
 
 ```text
@@ -77,12 +77,13 @@ Miaou Miaou Miaou;
 Miaou 喵 Meow Miao;
 ```
 
-The preferred file extension of the default Meow file format is `".meow"`.
+The preferred file extension of the Meow file format is `".meow"`.
 
 ### The Simplified Meow File Format
 
-A Meow source code can also be recorded as a sequence of non-negative integer
-numbers, each number corresponding to the value of a Meow element. For example:
+A Meow source code can also be stored and loaded as a sequence of non-negative
+integer numbers, each number corresponding to the value of a Meow element. For
+example:
 
 ```text
 0
@@ -94,23 +95,23 @@ numbers, each number corresponding to the value of a Meow element. For example:
 
 The preferred file extension of the simplified Meow file format is `".smeow"`.
 
-### The Meow Instruction Set
+### Meow Instruction Set
 
 | Opcode | Name | Description | `IP` Operation |
 |--------|------|-------------|----------------|
 | 0 | `RET` | Print an empty line `"\n"` to the output console. | `IP++` |
-| 1 | `MEOW` | Print a cat emoji to the output console. | `IP++` |
+| 1 | `MEOW` | Print `T` cat emoji characters to the output console. | `IP++` |
 | 2 | `PUSH` | Push `N` to the tail of the Meow List. | `IP += 2` |
 | 3 | `POP` | Pop the tail element from the Meow List. | `IP++` |
 | 4 | `LOAD` | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
 | 5 | `SAVE` | Copy the value of the tail element to `E(N)`. | `IP += 2` |
 | 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
-| 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two tail elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed to the tail. | `IP++` |
+| 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
 | 8 | `JMP` | Set `IP` to `N`. | `IP = N` |
 | 9 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next after the next instruction. | `IP = (T == 0) ? N : IP + 2` |
 | >=10 | `NOP` | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.
+* `T`: The value of the tail element.
 * `N`: The value of the next element.
 * `E(N)`: The element indexed by the value of the next element.
-* `T`: The value of the tail element.

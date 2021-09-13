@@ -19,25 +19,39 @@
  * @fileoverview The command-line utility to execute a Meowlang code.
  */
 
-import * as fs from 'fs';
+import fs from 'fs';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
 import {runMeowLang, CAT_EMOJI} from './meowlang.js';
 
-if (process.argv.length >= 3) {
-  const filepath = process.argv[2];
-  fs.readFile(filepath, 'utf8', (err, code) => {
-    if (err) {
-      console.error(err.message);
-      return;
-    }
-    runMeowLang(code.toString(),
-        (message) => {
-          console.error(message);
-        },
-        () => {
-          process.stdout.write('\n');
-        },
-        () => {
-          process.stdout.write(`${CAT_EMOJI}`);
-        });
-  });
+/** @type {Object} */
+const argv = yargs(hideBin(process.argv))
+    .option('input', {
+      alias: 'i',
+      type: 'string',
+      describe: 'The input file path',
+    })
+    .option('debug', {
+      alias: 'd',
+      type: 'boolean',
+      description: 'Show debug info',
+    })
+    .argv;
+
+if (argv.input) {
+  const code = fs.readFileSync(argv.input, 'utf8');
+  runMeowLang(
+      code.toString(),
+      (message) => {
+        console.error(message);
+      },
+      () => {
+        process.stdout.write('\n');
+      },
+      () => {
+        process.stdout.write(`${CAT_EMOJI}`);
+      },
+      argv.debug ? (info) => {
+        console.log(info);
+      } : undefined);
 }

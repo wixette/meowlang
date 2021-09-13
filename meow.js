@@ -20,14 +20,19 @@
  */
 
  import * as fs from 'fs';
+ import { runMeowLang } from './meowlang.js';
 
 if (process.argv.length >= 3) {
   const filepath = process.argv[2];
   fs.readFile(filepath, 'utf8' , (err, code) => {
     if (err) {
-      console.log('👽');
+      console.log(errorEmoji);
       return;
     }
-    console.log(code);
+    runMeowLang(code.toString(), undefined, undefined, undefined, inspector);
   })
+}
+
+function inspector(runtimeState) {
+  console.log(runtimeState);
 }

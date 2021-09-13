@@ -84,8 +84,8 @@ of a Meow element. For example:
 
 | Opcode | Name | Description | `IP` Operation |
 |--------|------|-------------|----------------|
-| 0 | `PAUSE` | Print a `"\n"` to the output console and pause for 0.5 sec. | `IP++` |
-| 1 | `MEOW` | Print a cat emoji to the output console and play the meow sound once. | `IP++` |
+| 0 | `RET` | Print an empty line `"\n"` to the output console. | `IP++` |
+| 1 | `MEOW` | Print a cat emoji to the output console. | `IP++` |
 | 2 | `PUSH` | Push `N` to the tail of the Meow List. | `IP += 2` |
 | 3 | `POP` | Pop the tail element from the Meow List. | `IP++` |
 | 4 | `LOAD` | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |

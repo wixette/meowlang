@@ -2,6 +2,30 @@
 
 Meowlang is an esoteric programming language designed for cats.
 
+## Usage
+
+### Setup
+
+```shell
+yarn
+```
+
+### Command-line Interpreter
+
+```shell
+node . -i examples/hello.meow
+```
+
+```shell
+node . -i examples/fibonacci.meow
+```
+
+### Web Application
+
+```shell
+yarn start
+```
+
 ## Language Specification
 
 ### Meow List
@@ -79,7 +103,7 @@ Miaou 喵 Meow Miao;
 
 The preferred file extension of the Meow file format is `".meow"`.
 
-### The Simplified Meow File Format
+### Simplified Meow File Format
 
 A Meow source code can also be stored and loaded as a sequence of non-negative
 integer numbers, each number corresponding to the value of a Meow element. For

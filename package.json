@@ -1,0 +1,9 @@
+{
+  "name": "meowlang",
+  "version": "0.1.0",
+  "description": "Meowlang is an esoteric programming language designed for cats.",
+  "main": "meow.js",
+  "author": "Yonggang Wang",
+  "license": "Apache-2.0",
+  "type": "module"
+}

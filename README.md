@@ -92,7 +92,7 @@ of a Meow element. For example:
 | 5 | `SAVE` | Copy the value of the tail element to `E(N)`. | `IP += 2` |
 | 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
 | 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two tail elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed to the tail. | `IP++` |
-| 8 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next instruction. The tail element is popped before jumping or continuing the execution. | `IP = (T == 0) ? N : IP + 1` |
+| 8 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next after the next instruction. The tail element is popped before jumping or continuing the execution. | `IP = (T == 0) ? N : IP + 2` |
 | >=9 | `NOP` | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.

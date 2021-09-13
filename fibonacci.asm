@@ -43,3 +43,4 @@ Push
 0
 Je
 9
+Pop

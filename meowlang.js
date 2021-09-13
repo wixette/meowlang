@@ -21,6 +21,13 @@
 
 export const CAT_EMOJI = '🐈';
 
+export const MEOW_TOKENS = {
+  en: 'Meow',
+  fr: 'Miaou',
+  zh: '喵',
+  py: 'Miao',
+};
+
 /**
  * Executes a Meowlang source code.
  * @param {string} code The source code
@@ -64,20 +71,12 @@ export function runMeowLang(code, reportErrorCallback,
 }
 
 /**
- * Gets the error reporting function.
- * @param {function(string)|undefined} reportErrorCallback The callback function
- *     to report an error message.
- * @return {function(string, string)}
+ * Parses a source code string in the simplified format.
+ * @param {string} code The source code.
+ * @return {Array<number>} The Meow List.
  */
-function getReportErrorFunc(reportErrorCallback) {
-  return (module, message) => {
-    const fullMessage = `Error: ${module} - ${message}`;
-    if (reportErrorCallback != undefined) {
-      reportErrorCallback(fullMessage);
-    } else {
-      console.error(fullMessage);
-    }
-  };
+export function parseMeowCode(code) {
+  return [];
 }
 
 /**
@@ -85,7 +84,7 @@ function getReportErrorFunc(reportErrorCallback) {
  * @param {string} code The source code.
  * @return {Array<number>} The Meow List.
  */
-function parseSimplifiedCode(code) {
+export function parseSimplifiedCode(code) {
   const lines = code.match(/[^\r\n]+/g);
   const list = [];
   for (const line of lines) {
@@ -102,12 +101,20 @@ function parseSimplifiedCode(code) {
 }
 
 /**
- * Parses a source code string in the simplified format.
- * @param {string} code The source code.
- * @return {Array<number>} The Meow List.
+ * Gets the error reporting function.
+ * @param {function(string)|undefined} reportErrorCallback The callback function
+ *     to report an error message.
+ * @return {function(string, string)}
  */
-function parseMeowCode(code) {
-  return [];
+function getReportErrorFunc(reportErrorCallback) {
+  return (module, message) => {
+    const fullMessage = `Error: ${module} - ${message}`;
+    if (reportErrorCallback != undefined) {
+      reportErrorCallback(fullMessage);
+    } else {
+      console.error(fullMessage);
+    }
+  };
 }
 
 /**

@@ -84,16 +84,16 @@ of a Meow element. For example:
 
 | Opcode | Name | Description | `IP` Operation |
 |--------|------|-------------|----------------|
-| 0 | Pause | Print a `"\n"` to the output console and pause for 0.5 sec. | `IP++` |
-| 1 | Meow | Print a cat emoji to the output console and play the meow sound once. | `IP++` |
-| 2 | Push | Push `N` to the tail of the Meow List. | `IP += 2` |
-| 3 | Pop | Pop the tail element from the Meow List. | `IP++` |
-| 4 | Load | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
-| 5 | Save | Copy the value of the tail element to `E(N)`. | `IP += 2` |
-| 6 | Add | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
-| 7 | Sub | Subtract the value of the last element from the value of the second to the last element, pop the last two tail elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed to the tail. | `IP++` |
-| 8 | JmpE | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next instruction. | `IP = (T == 0) ? N : IP + 1` |
-| >=9 | Nop | No operation. | `IP++` |
+| 0 | `PAUSE` | Print a `"\n"` to the output console and pause for 0.5 sec. | `IP++` |
+| 1 | `MEOW` | Print a cat emoji to the output console and play the meow sound once. | `IP++` |
+| 2 | `PUSH` | Push `N` to the tail of the Meow List. | `IP += 2` |
+| 3 | `POP` | Pop the tail element from the Meow List. | `IP++` |
+| 4 | `LOAD` | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
+| 5 | `SAVE` | Copy the value of the tail element to `E(N)`. | `IP += 2` |
+| 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
+| 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two tail elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed to the tail. | `IP++` |
+| 8 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next instruction. The tail element is popped before jumping or continuing the execution. | `IP = (T == 0) ? N : IP + 1` |
+| >=9 | `NOP` | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.
 * `N`: The value of the next element.

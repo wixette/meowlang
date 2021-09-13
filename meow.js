@@ -19,19 +19,19 @@
  * @fileoverview The command-line utility to execute a Meowlang code.
  */
 
- import * as fs from 'fs';
- import { runMeowLang, CAT_EMOJI } from './meowlang.js';
+import * as fs from 'fs';
+import {runMeowLang, CAT_EMOJI} from './meowlang.js';
 
 if (process.argv.length >= 3) {
   const filepath = process.argv[2];
-  fs.readFile(filepath, 'utf8' , (err, code) => {
+  fs.readFile(filepath, 'utf8', (err, code) => {
     if (err) {
-      console.log(errorEmoji);
+      console.error(err.message);
       return;
     }
     runMeowLang(code.toString(),
         (message) => {
-          process.stderr.write(`${message}\n`);
+          console.error(message);
         },
         () => {
           process.stdout.write('\n');
@@ -39,5 +39,5 @@ if (process.argv.length >= 3) {
         () => {
           process.stdout.write(`${CAT_EMOJI}`);
         });
-  })
+  });
 }

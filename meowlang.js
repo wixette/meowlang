@@ -28,13 +28,13 @@ export const CAT_EMOJI = '🐈';
  *     to report an error message.
  * @param {function()|undefined} pauseCallback The callback function to execute
  *     the PAUSE action.
- * @param {function()|undefined} MeowCallback The callback function to execute
+ * @param {function()|undefined} meowCallback The callback function to execute
  *     the MEOW action.
  * @param {function(Object)|undefined} runtimeListener The callback function to
  *     listen to the runtime events.
  */
 export function runMeowLang(code, reportErrorCallback,
-    pauseCallback, MeowCallback,
+    pauseCallback, meowCallback,
     runtimeListener) {
   const reportErrorFunc = getReportErrorFunc(reportErrorCallback);
 
@@ -55,7 +55,7 @@ export function runMeowLang(code, reportErrorCallback,
   try {
     execute(meowList,
         pauseCallback,
-        MeowCallback,
+        meowCallback,
         runtimeListener);
   } catch (err) {
     reportErrorFunc('Interpreter', err.message);
@@ -75,9 +75,9 @@ function getReportErrorFunc(reportErrorCallback) {
     if (reportErrorCallback != undefined) {
       reportErrorCallback(fullMessage);
     } else {
-      console.log(fullMessage);
+      console.error(fullMessage);
     }
-  }
+  };
 }
 
 /**
@@ -107,7 +107,7 @@ function parseSimplifiedCode(code) {
  * @return {Array<number>} The Meow List.
  */
 function parseMeowCode(code) {
-  throw new Error('Error in parsing');
+  return [];
 }
 
 /**
@@ -121,27 +121,27 @@ function removeWhiteSpaces(str) {
 
 /**
  * Executes the Meow List.
- * @param {Array<number>}
+ * @param {Array<number>} meowList The Meow List.
  * @param {function()|undefined} pauseCallback The callback function to execute
  *     the PAUSE action.
- * @param {function()|undefined} MeowCallback The callback function to execute
+ * @param {function()|undefined} meowCallback The callback function to execute
  *     the MEOW action.
  * @param {function(Object)|undefined} runtimeListener The callback function to
  *     listen to the runtime events.
  */
 function execute(meowList,
-    pauseCallback, MeowCallback, runtimeListener) {
-  const UNDEFINED_OPERAND = () => undefined;
-  const N_OPERAND = (ip, meowList) => {
+    pauseCallback, meowCallback, runtimeListener) {
+  const undefinedOperand = () => undefined;
+  const nextOperand = (ip, meowList) => {
     if (ip + 1 >= meowList.length) {
       throw new Error('N operand is not found.');
     }
     return meowList[ip + 1];
   };
-  const INSTRUCTION_TABLE = [
+  const instructions = [
     {
       opname: 'RET',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip) => {
         if (pauseCallback != undefined) {
           pauseCallback();
@@ -149,55 +149,55 @@ function execute(meowList,
           console.log('');
         }
         return ip + 1;
-      }
+      },
     },
     {
       opname: 'MEOW',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip) => {
-        if (MeowCallback != undefined) {
-          MeowCallback();
+        if (meowCallback != undefined) {
+          meowCallback();
         } else {
           console.log(CAT_EMOJI);
         }
         return ip + 1;
-      }
+      },
     },
     {
       opname: 'PUSH',
-      operand: N_OPERAND,
+      operand: nextOperand,
       action: (ip, meowList) => {
-        const nOperand = N_OPERAND(ip, meowList);
+        const nOperand = nextOperand(ip, meowList);
         meowList.push(nOperand);
         return ip + 2;
-      }
+      },
     },
     {
       opname: 'POP',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip, meowList) => {
         meowList.pop();
         return ip + 1;
-      }
+      },
     },
     {
       opname: 'LOAD',
-      operand: N_OPERAND,
+      operand: nextOperand,
       action: (ip, meowList) => {
-        const nOperand = N_OPERAND(ip, meowList);
+        const nOperand = nextOperand(ip, meowList);
         if (nOperand < 0 || nOperand >= meowList.length) {
           throw new Error(
               'Index "${nOperand}" exceeds the number of list elements');
         }
         meowList.push(meowList[nOperand]);
         return ip + 2;
-      }
+      },
     },
     {
       opname: 'SAVE',
-      operand: N_OPERAND,
+      operand: nextOperand,
       action: (ip, meowList) => {
-        const nOperand = N_OPERAND(ip, meowList);
+        const nOperand = nextOperand(ip, meowList);
         if (nOperand < 0 || nOperand >= meowList.length) {
           throw new Error(
               'Index "${nOperand}" exceeds the number of list elements');
@@ -205,11 +205,11 @@ function execute(meowList,
         const tail = meowList[meowList.length - 1];
         meowList[nOperand] = tail;
         return ip + 2;
-      }
+      },
     },
     {
       opname: 'ADD',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip, meowList) => {
         const operand1 = meowList[meowList.length - 2];
         const operand2 = meowList[meowList.length - 1];
@@ -218,11 +218,11 @@ function execute(meowList,
         const result = operand1 + operand2;
         meowList.push(result);
         return ip + 1;
-      }
+      },
     },
     {
       opname: 'SUB',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip, meowList) => {
         const operand1 = meowList[meowList.length - 2];
         const operand2 = meowList[meowList.length - 1];
@@ -231,48 +231,48 @@ function execute(meowList,
         const result = operand1 - operand2;
         meowList.push(result >= 0 ? result : 0);
         return ip + 1;
-      }
+      },
     },
     {
       opname: 'JMP',
-      operand: N_OPERAND,
+      operand: nextOperand,
       action: (ip, meowList) => {
-        const offset = N_OPERAND(ip, meowList);
+        const offset = nextOperand(ip, meowList);
         if (offset < 0 || offset >= meowList.length) {
           throw new Error(
               'Offset "${offset}" exceeds the number of list elements');
         }
         return offset;
-      }
+      },
     },
     {
       opname: 'JE',
-      operand: N_OPERAND,
+      operand: nextOperand,
       action: (ip, meowList) => {
-        const offset = N_OPERAND(ip, meowList);
+        const offset = nextOperand(ip, meowList);
         if (offset < 0 || offset >= meowList.length) {
           throw new Error(
               'Offset "${offset}" exceeds the number of list elements');
         }
         const tail = meowList[meowList.length - 1];
         return tail === 0 ? offset : ip + 2;
-      }
+      },
     },
     {
       opname: 'NOP',
-      operand: UNDEFINED_OPERAND,
+      operand: undefinedOperand,
       action: (ip) => {
         return ip + 1;
-      }
+      },
     },
   ];
 
   let ip = 0;
   while (ip < meowList.length) {
     const opcode = meowList[ip];
-    const instruction = opcode >= INSTRUCTION_TABLE.length ?
-        INSTRUCTION_TABLE[INSTRUCTION_TABLE.length - 1] :
-        INSTRUCTION_TABLE[opcode];
+    const instruction = opcode >= instructions.length ?
+        instructions[instructions.length - 1] :
+        instructions[opcode];
     if (runtimeListener != undefined) {
       runtimeListener({
         ip: ip,

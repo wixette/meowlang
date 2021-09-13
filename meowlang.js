@@ -19,8 +19,7 @@
  * @fileoverview The interpreter of Meowlang.
  */
 
-const ERR_EMOJI = '👽';
-const CAT_EMOJI = '🐈';
+export const CAT_EMOJI = '🐈';
 
 /**
  * Executes a Meowlang source code.
@@ -72,8 +71,7 @@ export function runMeowLang(code, reportErrorCallback,
  */
 function getReportErrorFunc(reportErrorCallback) {
   return (module, message) => {
-    const fullMessage =
-        `${ERR_EMOJI} ${module} ${ERR_EMOJI} ${message} ${ERR_EMOJI}`
+    const fullMessage = `Error: ${module} - ${message}`;
     if (reportErrorCallback != undefined) {
       reportErrorCallback(fullMessage);
     } else {
@@ -236,15 +234,27 @@ function execute(meowList,
       }
     },
     {
+      opname: 'JMP',
+      operand: N_OPERAND,
+      action: (ip, meowList) => {
+        const offset = N_OPERAND(ip, meowList);
+        if (offset < 0 || offset >= meowList.length) {
+          throw new Error(
+              'Offset "${offset}" exceeds the number of list elements');
+        }
+        return offset;
+      }
+    },
+    {
       opname: 'JE',
       operand: N_OPERAND,
       action: (ip, meowList) => {
         const offset = N_OPERAND(ip, meowList);
-        if (offset < 0 || offset >= meowList.length - 1) {
+        if (offset < 0 || offset >= meowList.length) {
           throw new Error(
               'Offset "${offset}" exceeds the number of list elements');
         }
-        const tail = meowList.pop();
+        const tail = meowList[meowList.length - 1];
         return tail === 0 ? offset : ip + 2;
       }
     },

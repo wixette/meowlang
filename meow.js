@@ -20,7 +20,7 @@
  */
 
  import * as fs from 'fs';
- import { runMeowLang } from './meowlang.js';
+ import { runMeowLang, CAT_EMOJI } from './meowlang.js';
 
 if (process.argv.length >= 3) {
   const filepath = process.argv[2];
@@ -29,10 +29,15 @@ if (process.argv.length >= 3) {
       console.log(errorEmoji);
       return;
     }
-    runMeowLang(code.toString(), undefined, undefined, undefined, inspector);
+    runMeowLang(code.toString(),
+        (message) => {
+          process.stderr.write(`${message}\n`);
+        },
+        () => {
+          process.stdout.write('\n');
+        },
+        () => {
+          process.stdout.write(`${CAT_EMOJI}`);
+        });
   })
-}
-
-function inspector(runtimeState) {
-  console.log(runtimeState);
 }

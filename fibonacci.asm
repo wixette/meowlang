@@ -1,46 +1,40 @@
-Push
-0
-Je
-6
-0
-1
-1
-Push
-10
-Save
+Jmp
 4
-Load
-4
-Load
-6
+1                ;; The first number.
+1                ;; The second number.
+Push
+10               ;; Start loop 1. Repeat 10 times.
+Load             ;; Start loop 2. Output the second number.
+3
 Meow
 Push
 1
 Sub
 Je
-25
-Push
-0
-Je
-15
-Load
-5
-Load
-6
+16
+Jmp
+8
+Pop              ;; End loop 2.
+Ret
+Load             ;; Push the first number.
+2
+Load             ;; Push the second number.
+3
 Add
-Load
-6
+Load             ;; Shift the second number to the first position.
+3
 Save
-5
+2
 Pop
-Save
-6
+Save             ;; Save the new sum as the second number.
+3
 Pop
 Push
 1
 Sub
-Push
-0
 Je
-9
-Pop
+38
+Jmp
+6
+Pop              ;; End loop 1.
+Nop

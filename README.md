@@ -20,11 +20,15 @@ node . -i examples/hello.meow
 node . -i examples/fibonacci.meow
 ```
 
-### Web Application
+### Web-based Interpreter
+
+Start a local server with
 
 ```shell
 yarn start
 ```
+
+Or visit the online interpreter at: https://wixette.github.io/meowlang/
 
 ## Examples
 

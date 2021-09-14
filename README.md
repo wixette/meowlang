@@ -12,12 +12,20 @@ yarn
 
 ### Command-line Interpreter
 
+Run a Meow program:
+
 ```shell
 node . -i examples/hello.meow
 ```
 
 ```shell
 node . -i examples/fibonacci.meow
+```
+
+Turn on debug info when running a Meow program:
+
+```shell
+node . -i examples/fibonacci.meow -d
 ```
 
 ### Web-based Interpreter

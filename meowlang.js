@@ -46,15 +46,15 @@ const MEOW_PROGRAM_REGEXP =
  * @param {string} code The program to be run.
  * @param {function(string)|undefined} reportErrorCallback The callback function
  *     to report an error message.
- * @param {function()|undefined} pauseCallback The callback function to execute
- *     the PAUSE action.
+ * @param {function()|undefined} retCallback The callback function to execute
+ *     the RET action.
  * @param {function()|undefined} meowCallback The callback function to execute
  *     the MEOW action.
  * @param {function(Object)|undefined} runtimeListener The callback function to
  *     listen to the runtime events.
  */
 export function runMeowLang(code, reportErrorCallback,
-    pauseCallback, meowCallback,
+    retCallback, meowCallback,
     runtimeListener) {
   const reportErrorFunc = getReportErrorFunc(reportErrorCallback);
 
@@ -74,7 +74,7 @@ export function runMeowLang(code, reportErrorCallback,
   // Executes the Meow List.
   try {
     execute(meowList,
-        pauseCallback,
+        retCallback,
         meowCallback,
         runtimeListener);
   } catch (err) {
@@ -156,15 +156,15 @@ function removeWhiteSpaces(str) {
 /**
  * Executes the instructions in a Meow List.
  * @param {Array<number>} meowList The Meow List.
- * @param {function()|undefined} pauseCallback The callback function to execute
- *     the PAUSE action.
+ * @param {function()|undefined} retCallback The callback function to execute
+ *     the RET action.
  * @param {function()|undefined} meowCallback The callback function to execute
  *     the MEOW action.
  * @param {function(Object)|undefined} runtimeListener The callback function to
  *     listen to the runtime events.
  */
 function execute(meowList,
-    pauseCallback, meowCallback, runtimeListener) {
+    retCallback, meowCallback, runtimeListener) {
   const undefinedOperand = () => undefined;
   const nextOperand = (ip, meowList) => {
     if (ip + 1 >= meowList.length) {
@@ -183,8 +183,8 @@ function execute(meowList,
       opname: 'RET',
       operand: undefinedOperand,
       action: (ip) => {
-        if (pauseCallback != undefined) {
-          pauseCallback();
+        if (retCallback != undefined) {
+          retCallback();
         } else {
           console.log('');
         }

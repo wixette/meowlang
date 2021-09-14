@@ -25,6 +25,7 @@
     <style>
       body {
         border: 0;
+        color: #333;
         font-family: 'Roboto Mono','Courier New',Courier,monospace;
         font-size: 90%;
         line-height: 2em;
@@ -48,7 +49,11 @@
       #title {
         font-size: 110%;
         line-height: 3em;
-        padding: 0 2em 0 2em;
+        padding: 0 1em 0 1em;
+      }
+      #title a:link, #title a:hover, #title a:visited, #title a:active {
+        color: #333;
+        text-decoration: none;
       }
       #run {
         border: #9ac 1px solid;
@@ -60,9 +65,11 @@
         padding: 0 2em 0 2em;
         user-select: none;
       }
+      #debug-switch-pane {
+        padding: 0 1em 0 1em;
+      }
       #footer {
         border-top: #def 1px solid;
-        font-size: 80%;
         margin: 1em 0 1em 0;
         text-align: center;
       }
@@ -104,7 +111,7 @@
       #debug {
         background-color: #efe;
         border: #def 1px solid;
-        color: #666;
+        color: #999;
         font-size: 12px;
         height: 300px;
         line-height: 1.5em;
@@ -119,15 +126,23 @@
       .blue {
         color: #33f;
       }
+      .list {
+        color: #090;
+      }
     </style>
   </head>
   <body>
     <div id="toolbar">
-      <div id="title">🐈&nbsp;Meowlang&nbsp;🐈</div>
+      <div id="title">🐈&nbsp;<a href="https://github.com/wixette/meowlang">Meowlang</a></div>
       <div id="run">Run</div>
+      <div id="debug-switch-pane">
+        Debug&nbsp;<input id="debug-switch" type="checkbox">
+      </div>
     </div>
     <div id="editor">
-      <div id="input"><textarea id="input-box" placeholder="Please enter a Meowlang program..."></textarea></div>
+      <div id="input">
+        <textarea id="input-box" placeholder="Please enter a Meowlang program..."></textarea>
+      </div>
       <div id="output"></div>
     </div>
     <div id="debug"></div>
@@ -137,10 +152,11 @@
 
     <script type="module">
       import {runMeowLang} from './meowlang.js';
-      const inputBox = document.getElementById("input-box");
+      const inputBox = document.getElementById('input-box');
       inputBox.focus();
-      const output = document.getElementById("output");
-      const debug = document.getElementById("debug");
+      const output = document.getElementById('output');
+      const debug = document.getElementById('debug');
+      const debugSwitch = document.getElementById('debug-switch');
       document.getElementById('run').addEventListener('click', () => {
         debug.innerHTML = '';
         output.innerHTML = '';
@@ -156,9 +172,14 @@
               output.innerHTML += '🐈';
             },
             (info) => {
+              if (!debugSwitch.checked) {
+                return;
+              }
               debug.innerHTML += `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
               if (info.ip != undefined) {
-                debug.innerHTML += `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
+                debug.innerHTML +=
+                    `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">` +
+                    `${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
               }
             }
         );

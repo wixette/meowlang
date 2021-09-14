@@ -113,7 +113,7 @@ export function parseMeow(code) {
  */
 export function parseSimplified(code) {
   const lines = code.match(/[^\r\n]+/g);
-  const list = [];
+  const meowList = [];
   for (const line of lines) {
     const token = removeWhiteSpaces(line);
     if (token.length <= 0) {
@@ -122,9 +122,9 @@ export function parseSimplified(code) {
     if (!token.match(/^[0-9]+$/)) {
       throw new Error(`Invalid number "${token}."`);
     }
-    list.push(parseInt(token));
+    meowList.push(parseInt(token));
   }
-  return list;
+  return meowList;
 }
 
 /**

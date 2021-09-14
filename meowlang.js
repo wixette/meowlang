@@ -168,14 +168,14 @@ function execute(meowList,
   const undefinedOperand = () => undefined;
   const nextOperand = (ip, meowList) => {
     if (ip + 1 >= meowList.length) {
-      throw new Error('N operand is not found.');
+      throw new Error('Operand N is required.');
     }
     return meowList[ip + 1];
   };
   const checkIndex = (index, meowList) => {
     if (index < 0 || index >= meowList.length) {
       throw new Error(
-          'Index "${nOperand}" exceeds the number of list elements.');
+          `Index "${index}" exceeds the number of list elements.`);
     }
   };
   const instructions = [

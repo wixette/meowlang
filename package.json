@@ -8,11 +8,13 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "start": "http-server . -c-1"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "http-server": "^13.0.2"
   },
   "dependencies": {
     "yargs": "^17.1.1"

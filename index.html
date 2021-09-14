@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2020 Yonggang Wang
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Meowlang Interpreter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+      body {
+        border: 0;
+        font-family: 'Roboto Mono','Courier New',Courier,monospace;
+        font-size: 90%;
+        line-height: 2em;
+        margin: 1em;
+        padding: 0;
+      }
+      div, img {
+        border: 0;
+        margin: 0;
+        padding: 0;
+      }
+      #toolbar {
+        align-items: center;
+        background-color: #def;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        margin: 0 0 1em 0;
+      }
+      #title {
+        font-size: 110%;
+        line-height: 3em;
+        padding: 0 2em 0 2em;
+      }
+      #run {
+        border: #9ac 1px solid;
+        background-color: #369;
+        color: #eee;
+        cursor: pointer;
+        font-size: 110%;
+        line-height: 2em;
+        padding: 0 2em 0 2em;
+        user-select: none;
+      }
+      #footer {
+        border-top: #def 1px solid;
+        font-size: 80%;
+        margin: 1em 0 1em 0;
+        text-align: center;
+      }
+      #editor {
+        align-items: stretch;
+        display: flex;
+        flex-direction: row;
+        height: 600px;
+        justify-content: space-between;
+        min-height: 600px;
+      }
+      #input {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 2;
+        margin-right: 1em;
+        max-width: 50%;
+      }
+      #input-box {
+        border: #def 1px solid;
+        color: #369;
+        flex-grow: 1;
+        font-family: 'Roboto Mono','Courier New',Courier,monospace;
+        font-size: 16px;
+        height: 100%;
+        line-height: 1.5em;
+        resize: none;
+        width: 100%;
+      }
+      #output {
+        background-color: #ffe;
+        border: #def 1px solid;
+        flex-grow: 2;
+        font-size: 20px;
+        line-height: 1.5em;
+        max-width: 50%;
+        overflow: auto;
+      }
+      #debug {
+        background-color: #efe;
+        border: #def 1px solid;
+        color: #666;
+        font-size: 12px;
+        height: 300px;
+        line-height: 1.5em;
+        margin-top: 1em;
+        min-height: 300px;
+        width: 100%;
+        overflow: auto;
+      }
+      .red {
+        color: #f33;
+      }
+      .blue {
+        color: #33f;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="toolbar">
+      <div id="title">🐈&nbsp;Meowlang&nbsp;🐈</div>
+      <div id="run">Run</div>
+    </div>
+    <div id="editor">
+      <div id="input"><textarea id="input-box" placeholder="Please enter a Meowlang program..."></textarea></div>
+      <div id="output"></div>
+    </div>
+    <div id="debug"></div>
+    <div id="footer">
+      &copy; 2021 <a href="https://github.com/wixette/meowlang">wixette</a>
+    </div>
+
+    <script type="module">
+      import {runMeowLang} from './meowlang.js';
+      const inputBox = document.getElementById("input-box");
+      inputBox.focus();
+      const output = document.getElementById("output");
+      const debug = document.getElementById("debug");
+      document.getElementById('run').addEventListener('click', () => {
+        debug.innerHTML = '';
+        output.innerHTML = '';
+        runMeowLang(
+            inputBox.value,
+            (error) => {
+              debug.innerHTML = `<span class="red">${error}</span>`;
+            },
+            () => {
+              output.innerHTML += '<br>';
+            },
+            () => {
+              output.innerHTML += '🐈';
+            },
+            (info) => {
+              debug.innerHTML += `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
+              if (info.ip != undefined) {
+                debug.innerHTML += `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
+              }
+            }
+        );
+      });
+    </script>
+  </body>
+</html>

@@ -22,6 +22,7 @@
 export const CAT_EMOJI = '🐈';
 
 export const SEP_TOKEN = ';';
+export const SEP_TOKEN_ZH = '；';
 
 export const MEOW_TOKENS = {
   en: 'Meow',
@@ -36,10 +37,12 @@ const MEOW_TOKEN_REGEXP =
     new RegExp(`${MEOW_TOKENS_COMBINED}`, 'ig');
 
 const MEOW_ELEMENT_REGEXP =
-    new RegExp(`(${MEOW_TOKENS_COMBINED})*${SEP_TOKEN}`, 'ig');
+    new RegExp(`(${MEOW_TOKENS_COMBINED})*(${SEP_TOKEN}|${SEP_TOKEN_ZH})`,
+        'ig');
 
 const MEOW_PROGRAM_REGEXP =
-    new RegExp(`^((${MEOW_TOKENS_COMBINED})*${SEP_TOKEN})*$`, 'ig');
+    new RegExp(`^((${MEOW_TOKENS_COMBINED})*(${SEP_TOKEN}|${SEP_TOKEN_ZH}))*$`,
+        'ig');
 
 /**
  * Runs a Meowlang program.

@@ -23,7 +23,7 @@
 import fs from 'fs';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
-import {parseSimplifiedCode, MEOW_TOKENS} from './meowlang.js';
+import {parseSimplified, MEOW_TOKENS, SEP_TOKEN} from './meowlang.js';
 
 /** @type {Object} */
 const argv = yargs(hideBin(process.argv))
@@ -43,9 +43,9 @@ const argv = yargs(hideBin(process.argv))
 
 if (argv.input) {
   const code = fs.readFileSync(argv.input, 'utf8');
-  const meowList = parseSimplifiedCode(code);
+  const meowList = parseSimplified(code);
   for (const element of meowList) {
     const tokenString = MEOW_TOKENS[argv.lang];
-    console.log(tokenString.repeat(element) + ';');
+    console.log(tokenString.repeat(element) + SEP_TOKEN);
   }
 }

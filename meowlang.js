@@ -21,12 +21,25 @@
 
 export const CAT_EMOJI = '🐈';
 
+export const SEP_TOKEN = ';';
+
 export const MEOW_TOKENS = {
   en: 'Meow',
   fr: 'Miaou',
   zh: '喵',
   py: 'Miao',
 };
+
+const MEOW_TOKENS_COMBINED = Object.values(MEOW_TOKENS).join('|');
+
+const MEOW_TOKEN_REGEXP =
+    new RegExp(`${MEOW_TOKENS_COMBINED}`, 'ig');
+
+const MEOW_ELEMENT_REGEXP =
+    new RegExp(`(${MEOW_TOKENS_COMBINED})*${SEP_TOKEN}`, 'ig');
+
+const MEOW_PROGRAM_REGEXP =
+    new RegExp(`^((${MEOW_TOKENS_COMBINED})*${SEP_TOKEN})*$`, 'ig');
 
 /**
  * Executes a Meowlang source code.
@@ -49,9 +62,9 @@ export function runMeowLang(code, reportErrorCallback,
   let meowList = null;
   try {
     if (code.search(/[0-9]/) >= 0) {
-      meowList = parseSimplifiedCode(code);
+      meowList = parseSimplified(code);
     } else {
-      meowList = parseMeowCode(code);
+      meowList = parseMeow(code);
     }
   } catch (err) {
     reportErrorFunc('Parser', err.message);
@@ -75,8 +88,22 @@ export function runMeowLang(code, reportErrorCallback,
  * @param {string} code The source code.
  * @return {Array<number>} The Meow List.
  */
-export function parseMeowCode(code) {
-  return [];
+export function parseMeow(code) {
+  code = removeWhiteSpaces(code);
+  if (code.match(MEOW_PROGRAM_REGEXP) == null) {
+    throw new Error('Invalid Meow format.');
+  }
+  const elements = code.match(MEOW_ELEMENT_REGEXP);
+  if (elements == null) {
+    return [];
+  }
+  const meowList = [];
+  for (const element of elements) {
+    const tokens = element.match(MEOW_TOKEN_REGEXP);
+    const value = tokens == null ? 0 : tokens.length;
+    meowList.push(value);
+  }
+  return meowList;
 }
 
 /**
@@ -84,7 +111,7 @@ export function parseMeowCode(code) {
  * @param {string} code The source code.
  * @return {Array<number>} The Meow List.
  */
-export function parseSimplifiedCode(code) {
+export function parseSimplified(code) {
   const lines = code.match(/[^\r\n]+/g);
   const list = [];
   for (const line of lines) {
@@ -93,7 +120,7 @@ export function parseSimplifiedCode(code) {
       continue;
     }
     if (!token.match(/^[0-9]+$/)) {
-      throw new Error(`Invalid number "${token}"`);
+      throw new Error(`Invalid number "${token}."`);
     }
     list.push(parseInt(token));
   }
@@ -123,7 +150,7 @@ function getReportErrorFunc(reportErrorCallback) {
  * @return {string}
  */
 function removeWhiteSpaces(str) {
-  return str.replace(/\s+/g);
+  return str.replace(/\s+/g, '');
 }
 
 /**
@@ -144,6 +171,12 @@ function execute(meowList,
       throw new Error('N operand is not found.');
     }
     return meowList[ip + 1];
+  };
+  const checkIndex = (index, meowList) => {
+    if (index < 0 || index >= meowList.length) {
+      throw new Error(
+          'Index "${nOperand}" exceeds the number of list elements.');
+    }
   };
   const instructions = [
     {
@@ -195,10 +228,7 @@ function execute(meowList,
       operand: nextOperand,
       action: (ip, meowList) => {
         const nOperand = nextOperand(ip, meowList);
-        if (nOperand < 0 || nOperand >= meowList.length) {
-          throw new Error(
-              'Index "${nOperand}" exceeds the number of list elements');
-        }
+        checkIndex(nOperand, meowList);
         meowList.push(meowList[nOperand]);
         return ip + 2;
       },
@@ -208,10 +238,7 @@ function execute(meowList,
       operand: nextOperand,
       action: (ip, meowList) => {
         const nOperand = nextOperand(ip, meowList);
-        if (nOperand < 0 || nOperand >= meowList.length) {
-          throw new Error(
-              'Index "${nOperand}" exceeds the number of list elements');
-        }
+        checkIndex(nOperand, meowList);
         const tail = meowList[meowList.length - 1];
         meowList[nOperand] = tail;
         return ip + 2;
@@ -248,10 +275,7 @@ function execute(meowList,
       operand: nextOperand,
       action: (ip, meowList) => {
         const offset = nextOperand(ip, meowList);
-        if (offset < 0 || offset >= meowList.length) {
-          throw new Error(
-              'Offset "${offset}" exceeds the number of list elements');
-        }
+        checkIndex(offset, meowList);
         return offset;
       },
     },
@@ -260,10 +284,7 @@ function execute(meowList,
       operand: nextOperand,
       action: (ip, meowList) => {
         const offset = nextOperand(ip, meowList);
-        if (offset < 0 || offset >= meowList.length) {
-          throw new Error(
-              'Offset "${offset}" exceeds the number of list elements');
-        }
+        checkIndex(offset, meowList);
         const tail = meowList[meowList.length - 1];
         return tail === 0 ? offset : ip + 2;
       },

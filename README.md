@@ -30,7 +30,7 @@ yarn start
 
 ### Meow List
 
-A valid Meowlang source code is simply a text representation of a Meow List.
+A valid Meowlang program is simply a text representation of a Meow List.
 
 A Meow List is a sequence of Meow elements.
 
@@ -55,7 +55,7 @@ In other words, code is data and data is code.
 ### Meow Tokens
 
 A Meow token is a cat cry in plain text. The following Meow tokens are valid and
-interchangeable in the Meowlang source code.
+interchangeable in Meowlang programs.
 
 * `Meow` in English
 * `Miaou` in French
@@ -67,8 +67,8 @@ the same things.
 
 ### Meow File Format
 
-The text representation of a Meowlang source code uses semicolon `";"` to end
-every Meow element.
+The text representation of a Meowlang program uses semicolon `";"` to end every
+Meow element.
 
 For example, the following code contains 5 Meow elements, whose values are 0, 1,
 2, 3 and 4.
@@ -82,15 +82,15 @@ Meow Meow Meow Meow;
 ```
 
 White spaces including `" "`, `"\t"` and `"\n"` are used for formatting purposes
-only, and will be ignored when the source code is executed. You may layout your
-code in many different and interesting ways. For example, the following code is
-an equivalent representation of the above code:
+only, and will be ignored when the program is executed. You may layout your code
+in many different and interesting ways. For example, the following code is an
+equivalent representation of the above code:
 
 ```text
 ; M e o w ; MeowMeow ; MeowMeowMeow ; MeowMeowMeowMeow ;
 ```
 
-The Meow tokens in the supported languages can be mixed in a same source code.
+The Meow tokens in the supported languages can be mixed up in a same program.
 For example:
 
 ```text
@@ -105,7 +105,7 @@ The preferred file extension of the Meow file format is `".meow"`.
 
 ### Simplified Meow File Format
 
-A Meow source code can also be stored and loaded as a sequence of non-negative
+A Meow program can also be stored and loaded as a sequence of non-negative
 integer numbers, each number corresponding to the value of a Meow element. For
 example:
 

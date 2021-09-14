@@ -42,8 +42,8 @@ const MEOW_PROGRAM_REGEXP =
     new RegExp(`^((${MEOW_TOKENS_COMBINED})*${SEP_TOKEN})*$`, 'ig');
 
 /**
- * Executes a Meowlang source code.
- * @param {string} code The source code
+ * Runs a Meowlang program.
+ * @param {string} code The program to be run.
  * @param {function(string)|undefined} reportErrorCallback The callback function
  *     to report an error message.
  * @param {function()|undefined} pauseCallback The callback function to execute
@@ -84,8 +84,8 @@ export function runMeowLang(code, reportErrorCallback,
 }
 
 /**
- * Parses a source code string in the simplified format.
- * @param {string} code The source code.
+ * Parses a program in the Meow format.
+ * @param {string} code The program.
  * @return {Array<number>} The Meow List.
  */
 export function parseMeow(code) {
@@ -107,8 +107,8 @@ export function parseMeow(code) {
 }
 
 /**
- * Parses a source code string in the simplified format.
- * @param {string} code The source code.
+ * Parses a program in the simplified Meow format.
+ * @param {string} code The program.
  * @return {Array<number>} The Meow List.
  */
 export function parseSimplified(code) {
@@ -145,7 +145,7 @@ function getReportErrorFunc(reportErrorCallback) {
 }
 
 /**
- * Removes all the white spaces from the string.
+ * Removes all the white spaces from a string.
  * @param {string} str
  * @return {string}
  */
@@ -154,7 +154,7 @@ function removeWhiteSpaces(str) {
 }
 
 /**
- * Executes the Meow List.
+ * Executes the instructions in a Meow List.
  * @param {Array<number>} meowList The Meow List.
  * @param {function()|undefined} pauseCallback The callback function to execute
  *     the PAUSE action.

@@ -26,6 +26,88 @@ node . -i examples/fibonacci.meow
 yarn start
 ```
 
+## Examples
+
+Print the Fibonacci numbers with cat emojis:
+
+![Fibonacci](examples/fibonacci_with_meow.png)
+
+The [Fibonacci source code](examples/fibonacci.meow) in English Meow:
+
+```text
+MeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeow;
+Meow;
+Meow;
+MeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeow;
+MeowMeow;
+Meow;
+;
+MeowMeowMeow;
+MeowMeowMeowMeow;
+MeowMeow;
+MeowMeowMeowMeow;
+MeowMeowMeow;
+MeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeow;
+MeowMeowMeow;
+MeowMeowMeowMeowMeow;
+MeowMeow;
+MeowMeowMeow;
+MeowMeowMeowMeowMeow;
+MeowMeowMeow;
+MeowMeowMeow;
+MeowMeow;
+Meow;
+MeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeow;
+MeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
+```
+
+The [Fibonacci source code](example/../examples/fibonacci.zh.meow) in Chinese Meow:
+
+```text
+喵喵喵喵喵喵喵喵;
+喵喵喵喵;
+喵;
+喵;
+喵喵;
+喵喵喵喵喵喵喵喵喵喵;
+喵喵喵喵;
+喵喵;
+喵;
+;
+喵喵喵;
+喵喵喵喵;
+喵喵;
+喵喵喵喵;
+喵喵喵;
+喵喵喵喵喵喵;
+喵喵喵喵;
+喵喵喵;
+喵喵喵喵喵;
+喵喵;
+喵喵喵;
+喵喵喵喵喵;
+喵喵喵;
+喵喵喵;
+喵喵;
+喵;
+喵喵喵喵喵喵喵;
+喵喵喵喵喵喵喵喵喵;
+喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵;
+喵喵喵喵喵喵喵喵;
+喵喵喵喵喵喵;
+喵喵喵;
+喵喵喵喵喵喵喵喵喵喵;
+```
+
 ## Language Specification
 
 ### Meow List

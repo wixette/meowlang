@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2020 Yonggang Wang
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>喵语言（Meowlang）解释器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+      body {
+        font-family: "PingFang SC","Lantinghei SC","Microsoft Yahei","Roboto Mono",Menlo,Monaco,Consolas,"Courier New",monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="toolbar">
+      <div id="title">🐈&nbsp;<a href="https://github.com/wixette/meowlang">喵语言</a></div>
+      <div id="run">运行</div>
+      <div id="debug-switch-pane">
+        调试开关&nbsp;<input id="debug-switch" type="checkbox">
+      </div>
+    </div>
+    <div id="editor">
+      <div id="input">
+        <textarea id="input-box" placeholder="请在此输入喵语言程序..."></textarea>
+      </div>
+      <div id="output"></div>
+    </div>
+    <div id="debug"></div>
+    <div id="doc"></div>
+    <div id="footer">
+      &copy; 2021 <a href="https://github.com/wixette/meowlang">wixette</a>
+    </div>
+
+    <script type="module">
+      import {runMeowLang} from './meowlang.js';
+      const inputBox = document.getElementById('input-box');
+      inputBox.focus();
+      const output = document.getElementById('output');
+      const debug = document.getElementById('debug');
+      const debugSwitch = document.getElementById('debug-switch');
+      document.getElementById('run').addEventListener('click', () => {
+        debug.innerHTML = '';
+        output.innerHTML = '';
+        runMeowLang(
+            inputBox.value,
+            (error) => {
+              debug.innerHTML = `<span class="red">${error}</span>`;
+            },
+            () => {
+              output.innerHTML += '<br>';
+            },
+            () => {
+              output.innerHTML += '🐈';
+            },
+            (info) => {
+              if (!debugSwitch.checked) {
+                return;
+              }
+              debug.innerHTML += `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
+              if (info.ip != undefined) {
+                debug.innerHTML +=
+                    `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">` +
+                    `${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
+              }
+            }
+        );
+      });
+    </script>
+
+    <script src="./libs/marked.min.js"></script>
+    <script>
+      const README_FILE = './README.zh.md';
+
+      function loadFile(url, onReadyCallback) {
+        var xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState === XMLHttpRequest.DONE &&
+              xmlHttp.status === 200) {
+            onReadyCallback(xmlHttp.responseText);
+          }
+        };
+        xmlHttp.open("GET", url);
+        xmlHttp.send(null);
+      }
+
+      loadFile(README_FILE, (content) => {
+        document.getElementById('doc').innerHTML = marked(content);
+      });
+    </script>
+  </body>
+</html>

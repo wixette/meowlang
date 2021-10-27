@@ -84,7 +84,7 @@ MeowMeowMeow;
 MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
 ```
 
-The [Fibonacci source code](example/../examples/fibonacci.zh.meow) in Chinese Meow:
+The [Fibonacci source code](examples/fibonacci.zh.meow) in Chinese Meow:
 
 ```text
 喵喵喵喵喵喵喵喵;

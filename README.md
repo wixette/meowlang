@@ -2,7 +2,11 @@
 
 Meowlang is an esoteric programming language designed for cats.
 
-## Usage
+## Online Interpreter
+
+Visit the [online interpreter](https://wixette.github.io/meowlang/).
+
+## Run from Source Code
 
 ### Setup
 
@@ -35,8 +39,6 @@ Start a local server with
 ```shell
 yarn start
 ```
-
-Or visit the online interpreter at: https://wixette.github.io/meowlang/
 
 ## Examples
 

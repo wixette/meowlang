@@ -22,117 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-    <style>
-      body {
-        border: 0;
-        color: #333;
-        font-family: 'Roboto Mono','Courier New',Courier,monospace;
-        font-size: 90%;
-        line-height: 2em;
-        margin: 1em;
-        padding: 0;
-      }
-      div, img {
-        border: 0;
-        margin: 0;
-        padding: 0;
-      }
-      #toolbar {
-        align-items: center;
-        background-color: #def;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        margin: 0 0 1em 0;
-      }
-      #title {
-        font-size: 110%;
-        line-height: 3em;
-        padding: 0 1em 0 1em;
-      }
-      #title a:link, #title a:hover, #title a:visited, #title a:active {
-        color: #333;
-        text-decoration: none;
-      }
-      #run {
-        border: #9ac 1px solid;
-        background-color: #369;
-        color: #eee;
-        cursor: pointer;
-        font-size: 110%;
-        line-height: 2em;
-        padding: 0 2em 0 2em;
-        user-select: none;
-      }
-      #debug-switch-pane {
-        padding: 0 1em 0 1em;
-      }
-      #footer {
-        border-top: #def 1px solid;
-        margin: 1em 0 1em 0;
-        padding: 1em;
-        text-align: center;
-      }
-      #editor {
-        align-items: stretch;
-        display: flex;
-        flex-direction: row;
-        height: 600px;
-        justify-content: space-between;
-        min-height: 600px;
-      }
-      #input {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 2;
-        margin-right: 2em;
-        max-width: 50%;
-      }
-      #input-box {
-        border: #def 1px solid;
-        color: #369;
-        flex-grow: 1;
-        font-family: 'Roboto Mono','Courier New',Courier,monospace;
-        font-size: 16px;
-        height: 100%;
-        line-height: 1.5em;
-        padding: 5px;
-        resize: none;
-        width: 100%;
-      }
-      #output {
-        background-color: #ffe;
-        border: #def 1px solid;
-        flex-grow: 2;
-        font-size: 20px;
-        line-height: 1.5em;
-        max-width: 50%;
-        padding: 5px;
-        overflow: auto;
-      }
-      #debug {
-        background-color: #efe;
-        border: #def 1px solid;
-        color: #999;
-        font-size: 14px;
-        height: 300px;
-        line-height: 2em;
-        margin-top: 1em;
-        min-height: 300px;
-        width: 100%;
-        overflow: auto;
-      }
-      .red {
-        color: #f33;
-      }
-      .blue {
-        color: #33f;
-      }
-      .list {
-        color: #090;
-      }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
     <div id="toolbar">
@@ -149,6 +39,7 @@
       <div id="output"></div>
     </div>
     <div id="debug"></div>
+    <div id="doc"></div>
     <div id="footer">
       &copy; 2021 <a href="https://github.com/wixette/meowlang">wixette</a>
     </div>
@@ -186,6 +77,28 @@
               }
             }
         );
+      });
+    </script>
+
+    <script src="./libs/marked.min.js"></script>
+    <script>
+      const README_FILE = './README.md';
+
+      function loadFile(url, onReadyCallback) {
+        var xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState === XMLHttpRequest.DONE &&
+              xmlHttp.status === 200) {
+            onReadyCallback(xmlHttp.responseText);
+          }
+        };
+        xmlHttp.open("GET", url);
+        xmlHttp.send(null);
+      }
+
+      loadFile(README_FILE, (content) => {
+        document.getElementById('doc').innerHTML = marked(content);
       });
     </script>
   </body>

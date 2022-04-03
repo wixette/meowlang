@@ -12,9 +12,9 @@
     "start": "http-server . -c-1"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
+    "eslint": "^8.12.0",
     "eslint-config-google": "^0.14.0",
-    "http-server": "^13.0.2"
+    "http-server": "^14.1.0"
   },
   "dependencies": {
     "yargs": "^17.1.1"

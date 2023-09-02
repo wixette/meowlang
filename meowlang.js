@@ -25,8 +25,10 @@ export const SEP_TOKEN = ';';
 export const SEP_TOKEN_ZH = '；';
 
 export const MEOW_TOKENS = {
+  de: 'Miau',
   en: 'Meow',
   fr: 'Miaou',
+  jp: 'にゃん',
   zh: '喵',
   py: 'Miao',
 };

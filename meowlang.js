@@ -28,7 +28,7 @@ export const MEOW_TOKENS = {
   de: 'Miau',
   en: 'Meow',
   fr: 'Miaou',
-  jp: 'にゃん',
+  jp: 'ニャー',
   zh: '喵',
   py: 'Miao',
 };

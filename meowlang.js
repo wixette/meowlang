@@ -24,13 +24,21 @@ export const CAT_EMOJI = '🐈';
 export const SEP_TOKEN = ';';
 export const SEP_TOKEN_ZH = '；';
 
+// See https://simple.wikipedia.org/wiki/Meow
+//
+// Different languages have different ways of spelling "meow." For example,
+// English has been using the meow spelling since 1842 and before that, it used
+// the miaow, miau, or meaw spellings.[2] Spanish and German still use the miau
+// spelling while French uses the miaou spelling.[3]
 export const MEOW_TOKENS = {
   de: 'Miau',
-  en: 'Meow',
+  en_1: 'Meow',
+  en_2: 'Miaow',
+  en_3: 'Meaw',
   fr: 'Miaou',
   jp: 'ニャー',
   zh: '喵',
-  py: 'Miao',
+  zh_py: 'Miao',
 };
 
 const MEOW_TOKENS_COMBINED = Object.values(MEOW_TOKENS).join('|');

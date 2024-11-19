@@ -153,7 +153,7 @@ In other words, code is data and data is code.
 A Meow token is a cat cry in plain text. The following Meow tokens are valid and
 interchangeable in Meowlang programs.
 
-* `Meow` in English
+* `Meow` in English (or `Miaow` and `Meaw` as alternatives)
 * `Miaou` in French
 * `喵` in Chinese
 * `Miao` in Chinese Pinyin

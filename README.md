@@ -159,6 +159,7 @@ interchangeable in Meowlang programs.
 * `Miao` in Chinese Pinyin
 * `Miau` in German
 * `ニャー` in Japanese Katakana (Katakana because its onomatopoeia)
+* `Мяу` in Russian
 
 Meow tokens are case-insensitive. For example, `Meow`, `meow`, and `MEOW` are
 the same things.

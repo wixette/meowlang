@@ -39,6 +39,7 @@ export const MEOW_TOKENS = {
   jp: 'ニャー',
   zh: '喵',
   zh_py: 'Miao',
+  ru: 'Мяу',
 };
 
 const MEOW_TOKENS_COMBINED = Object.values(MEOW_TOKENS).join('|');

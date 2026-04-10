@@ -157,6 +157,7 @@ code](examples/fibonacci.zh.meow)。
 * 汉语拼音：`Miao`
 * 德语：`Miau`
 * 日语片假名：`ニャー`
+* 俄语：`Мяу`
 
 喵符号在程序中不区分大小写。例如, `Meow`、`meow`、`MEOW`都是同样的喵符号。
 

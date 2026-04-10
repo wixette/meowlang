@@ -114,6 +114,11 @@ select#examples {
   color: #78909c;
   font-size: 0.875rem;
 }
+/* Materialize sets margin:0 16px on .lever for Off/On text labels.
+ * We have no such text, so collapse the left margin to zero. */
+.switch-ctrl .lever {
+  margin-left: 0;
+}
 .switch label input[type=checkbox]:checked + .lever {
   background-color: #80cbc4;
 }

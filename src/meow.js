@@ -1,6 +1,7 @@
+// @ts-check
 /**
  * @license
- * Copyright 2021 Yonggang Wang
+ * Copyright 2021-2026 Yonggang Wang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +17,11 @@
  */
 
 /**
- * @fileoverview The command-line utility to execute a Meowlang code.
+ * @fileoverview Command-line interpreter for Meowlang.
+ *
+ * Usage:
+ *   node . -i <file.meow>          Run a Meowlang program
+ *   node . -i <file.meow> -d       Run with debug output
  */
 
 import fs from 'fs';
@@ -24,24 +29,23 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {runMeowLang, CAT_EMOJI} from './meowlang.js';
 
-/** @type {Object} */
 const argv = yargs(hideBin(process.argv))
     .option('input', {
       alias: 'i',
       type: 'string',
-      describe: 'The input file path',
+      describe: 'The input .meow or .smeow file path',
     })
     .option('debug', {
       alias: 'd',
       type: 'boolean',
-      description: 'Show debug info',
+      describe: 'Print interpreter state after each instruction',
     })
     .argv;
 
 if (argv.input) {
-  const code = fs.readFileSync(argv.input, 'utf8');
+  const code = fs.readFileSync(/** @type {string} */ (argv.input), 'utf8');
   runMeowLang(
-      code.toString(),
+      code,
       (message) => {
         console.error(message);
       },
@@ -49,9 +53,11 @@ if (argv.input) {
         process.stdout.write('\n');
       },
       () => {
-        process.stdout.write(`${CAT_EMOJI}`);
+        process.stdout.write(CAT_EMOJI);
       },
-      argv.debug ? (info) => {
-        console.log(info);
-      } : undefined);
+      argv.debug ?
+          (info) => {
+            console.log(info);
+          } :
+          undefined);
 }

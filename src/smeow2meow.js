@@ -1,6 +1,7 @@
+// @ts-check
 /**
  * @license
- * Copyright 2021 Yonggang Wang
+ * Copyright 2021-2026 Yonggang Wang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +17,12 @@
  */
 
 /**
- * @fileoverview The command-line utility to convert a .smeow file to a .meow
- * file.
+ * @fileoverview Command-line utility that converts a .smeow (simplified)
+ * file into a .meow (token) file.
+ *
+ * Usage:
+ *   node src/smeow2meow.js -i <file.smeow>
+ *   node src/smeow2meow.js -i <file.smeow> --lang zh
  */
 
 import fs from 'fs';
@@ -25,27 +30,26 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {parseSimplified, MEOW_TOKENS, SEP_TOKEN} from './meowlang.js';
 
-/** @type {Object} */
 const argv = yargs(hideBin(process.argv))
     .option('input', {
       alias: 'i',
       type: 'string',
-      describe: 'The input file path',
+      describe: 'The input .smeow file path',
     })
     .option('lang', {
       alias: 'l',
       type: 'string',
       choices: Object.keys(MEOW_TOKENS),
       default: 'en_1',
-      description: 'The language of the Meow token',
+      describe: 'The Meow token language/variant to use in the output',
     })
     .argv;
 
 if (argv.input) {
-  const code = fs.readFileSync(argv.input, 'utf8');
+  const code = fs.readFileSync(/** @type {string} */ (argv.input), 'utf8');
   const meowList = parseSimplified(code);
-  for (const element of meowList) {
-    const tokenString = MEOW_TOKENS[argv.lang];
-    console.log(tokenString.repeat(element) + SEP_TOKEN);
+  const token = MEOW_TOKENS[/** @type {string} */ (argv.lang)];
+  for (const value of meowList) {
+    console.log(token.repeat(value) + SEP_TOKEN);
   }
 }

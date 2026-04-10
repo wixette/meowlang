@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.0] - 2026-04-10
+
+### New Features
+
+- Added two new example programs: `cat.meow` (prints 20 cat emojis) and
+  `countdown.meow` (counts down from 10 to 1).
+- All example programs are now available in English (`.meow`), Chinese
+  (`.zh.meow`), simplified integer (`.smeow`), and annotated assembly
+  (`.asm`) formats.
+- Web UI: added an example selector dropdown so users can load any example
+  program with one click.
+- Web UI: redesigned layout is now responsive and works on narrow screens.
+
+### Code Quality
+
+- Reorganized JavaScript source files from the project root into `src/`.
+- Added comprehensive vitest unit tests (`tests/meowlang.test.js`) covering
+  all opcodes, error handling, and example programs.
+- Added `// @ts-check` and full JSDoc annotations to all source files.
+- Added `jsconfig.json` for editor type-checking without a build step.
+
 ## [0.2.0] - 2026-04-10
 
 ### Bug Fixes

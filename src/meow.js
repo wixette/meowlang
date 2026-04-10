@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @license
- * Copyright 2021 Yonggang Wang
+ * Copyright 2021-2026 Yonggang Wang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

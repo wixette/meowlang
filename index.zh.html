@@ -17,45 +17,99 @@
 <html lang="zh">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>喵语言（Meowlang）解释器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
       body {
-        font-family: "PingFang SC","Lantinghei SC","Microsoft Yahei","Roboto Mono",Menlo,Monaco,Consolas,"Courier New",monospace;
+        font-family: "PingFang SC", "Lantinghei SC", "Microsoft Yahei",
+            "Roboto", sans-serif;
       }
     </style>
   </head>
   <body>
-    <div id="toolbar">
-      <div id="title">🐈&nbsp;<a href="https://github.com/wixette/meowlang">喵语言</a></div>
-      <select id="examples" title="加载示例程序">
-        <option value="">-- 加载示例 --</option>
-        <option value="examples/cat.zh.meow">猫咪（Cat）</option>
-        <option value="examples/hello.zh.meow">你好（Hello）</option>
-        <option value="examples/countdown.zh.meow">倒计时（Countdown）</option>
-        <option value="examples/sum.zh.meow">求和（Sum）</option>
-        <option value="examples/fibonacci.zh.meow">斐波那契（Fibonacci）</option>
-      </select>
-      <div id="run">运行</div>
-      <div id="debug-switch-pane">
-        调试开关&nbsp;<input id="debug-switch" type="checkbox">
+
+    <!-- 顶部应用栏 -->
+    <nav>
+      <div class="nav-wrapper">
+        <a href="https://github.com/wixette/meowlang" class="brand-logo">
+          🐈&nbsp;喵语言
+        </a>
+        <ul class="right">
+          <li><a href="index.html" title="English">English</a></li>
+          <li>
+            <a href="https://github.com/wixette/meowlang"
+               title="在 GitHub 上查看源码">
+              <i class="material-icons">code</i>
+            </a>
+          </li>
+        </ul>
       </div>
-    </div>
-    <div id="editor">
-      <div id="input">
-        <textarea id="input-box" placeholder="请在此输入喵语言程序，或从上方加载示例..."></textarea>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="container main-content">
+
+      <!-- 工具栏：示例选择器 · 运行 · 调试开关 -->
+      <div class="controls-bar">
+        <select id="examples" title="加载示例程序">
+          <option value="">加载示例…</option>
+          <option value="examples/cat.zh.meow">猫咪（Cat）</option>
+          <option value="examples/hello.zh.meow">你好（Hello）</option>
+          <option value="examples/countdown.zh.meow">倒计时（Countdown）</option>
+          <option value="examples/sum.zh.meow">求和（Sum）</option>
+          <option value="examples/fibonacci.zh.meow">斐波那契（Fibonacci）</option>
+        </select>
+        <button id="run" class="btn">
+          <i class="material-icons left">play_arrow</i>运行
+        </button>
+        <div class="switch-ctrl">
+          <span class="switch-lbl">调试</span>
+          <div class="switch">
+            <label>
+              <input id="debug-switch" type="checkbox">
+              <span class="lever"></span>
+            </label>
+          </div>
+        </div>
       </div>
-      <div id="output"></div>
-    </div>
-    <div id="debug"></div>
-    <div id="doc"></div>
-    <div id="footer">
-      &copy; 2020-2026 <a href="https://github.com/wixette/meowlang">wixette</a>
-    </div>
+
+      <!-- 编辑器（左）和输出（右） -->
+      <div class="editor-row">
+        <div class="card z-depth-1 editor-card">
+          <textarea id="input-box"
+            placeholder="请在此输入喵语言程序，或从上方加载示例…"
+          ></textarea>
+        </div>
+        <div id="output" class="card z-depth-1"></div>
+      </div>
+
+      <!-- 调试输出（为空时隐藏） -->
+      <div id="debug"></div>
+
+      <!-- 语言规范文档（来自 README.zh.md） -->
+      <div id="doc"></div>
+
+    </div><!-- /.container -->
+
+    <footer class="page-footer">
+      <div class="footer-copyright">
+        <div class="container">
+          &copy; 2020-2026
+          <a href="https://github.com/wixette/meowlang">wixette</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./libs/marked.min.js"></script>
 
     <script type="module">
       import {runMeowLang} from './src/meowlang.js';
@@ -66,18 +120,21 @@
       const debugSwitch = document.getElementById('debug-switch');
 
       // 从示例下拉菜单加载程序到编辑器。
-      document.getElementById('examples').addEventListener('change', async (e) => {
-        const path = e.target.value;
-        if (!path) return;
-        try {
-          const resp = await fetch(path);
-          inputBox.value = await resp.text();
-        } catch (err) {
-          debug.innerHTML = `<span class="red">加载示例失败：${err.message}</span>`;
-        }
-        e.target.value = '';
-        inputBox.focus();
-      });
+      document.getElementById('examples').addEventListener('change',
+          async (e) => {
+            const path = e.target.value;
+            if (!path) return;
+            try {
+              const resp = await fetch(path);
+              inputBox.value = await resp.text();
+            } catch (err) {
+              debug.innerHTML =
+                  `<span class="debug-error">` +
+                  `加载示例失败：${err.message}</span>`;
+            }
+            e.target.value = '';
+            inputBox.focus();
+          });
 
       // 运行当前编辑器中的喵语言程序。
       document.getElementById('run').addEventListener('click', () => {
@@ -86,7 +143,8 @@
         runMeowLang(
             inputBox.value,
             (error) => {
-              debug.innerHTML = `<span class="red">${error}</span>`;
+              debug.innerHTML =
+                  `<span class="debug-error">${error}</span>`;
             },
             () => {
               output.innerHTML += '<br>';
@@ -97,18 +155,19 @@
             (info) => {
               if (!debugSwitch.checked) return;
               debug.innerHTML +=
-                  `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
+                  `<span class="debug-list">` +
+                  `[${info.meowList.join(', ')}]</span><br>`;
               if (info.ip != undefined) {
                 debug.innerHTML +=
-                    `<span>IP=</span><span class="blue">${info.ip}</span>` +
-                    ` op=<span class="blue">${info.opname}</span>` +
-                    ` operand=<span class="blue">${info.operand}</span><br>`;
+                    `IP=<span class="debug-val">${info.ip}</span>` +
+                    ` op=<span class="debug-val">${info.opname}</span>` +
+                    ` operand=<span class="debug-val">` +
+                    `${info.operand}</span><br>`;
               }
             });
       });
     </script>
 
-    <script src="./libs/marked.min.js"></script>
     <script>
       // 在解释器下方渲染 README.zh.md 作为语言参考文档。
       fetch('./README.zh.md')
@@ -117,5 +176,6 @@
             document.getElementById('doc').innerHTML = marked(content);
           });
     </script>
+
   </body>
 </html>

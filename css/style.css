@@ -1,172 +1,260 @@
-body {
-  border: 0;
-  color: #333;
-  font-family: "Roboto Mono",Menlo,Monaco,Consolas,"Courier New",monospace;
-  font-size: 90%;
-  line-height: 2em;
-  margin: 1em;
-  padding: 0;
-}
-div, img {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-#toolbar {
-  align-items: center;
-  background-color: #def;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0 0 1em 0;
-  gap: 0.5em;
-}
-#title {
-  font-size: 110%;
-  line-height: 3em;
-  padding: 0 1em;
-}
-#title a:link, #title a:hover, #title a:visited, #title a:active {
-  color: #333;
-  text-decoration: none;
-}
-#examples {
-  background-color: #fff;
-  border: #9ac 1px solid;
-  color: #369;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 90%;
-  line-height: 2em;
-  padding: 0 0.5em;
-}
-#run {
-  border: #9ac 1px solid;
-  background-color: #369;
-  color: #eee;
-  cursor: pointer;
-  font-size: 110%;
-  line-height: 2em;
-  padding: 0 2em;
-  user-select: none;
-}
-#debug-switch-pane {
-  padding: 0 1em;
-}
-#footer {
-  border-top: #def 1px solid;
-  margin: 4em 0 1em 0;
-  padding: 1em;
-  text-align: center;
+/* ================================================================
+ * Meowlang custom styles (layered on Materialize CSS 1.0.0)
+ * ================================================================ */
+
+/* ── Design tokens ──────────────────────────────────────────── */
+:root {
+  --nav-bg:       #263238;   /* blue-grey darken-4 */
+  --primary:      #00838f;   /* cyan darken-2 */
+  --primary-dark: #005662;   /* cyan darken-4 */
+  --output-bg:    #fffde7;   /* yellow lighten-5 */
+  --debug-bg:     #eceff1;   /* blue-grey lighten-5 */
+  --debug-border: #90a4ae;   /* blue-grey lighten-2 */
+  --code-fg:      #37474f;   /* blue-grey darken-3 */
+  --mono: 'Roboto Mono', 'Courier New', Courier, monospace;
 }
 
-/* Editor: side-by-side on desktop */
-#editor {
-  align-items: stretch;
-  display: flex;
-  flex-direction: row;
-  height: 400px;
-  justify-content: space-between;
-  min-height: 300px;
+/* ── Base ───────────────────────────────────────────────────── */
+body {
+  background-color: #fafafa;
+  color: var(--code-fg);
+  font-family: 'Roboto', sans-serif;
 }
-#input {
+
+/* ── Nav bar ────────────────────────────────────────────────── */
+nav, nav .nav-wrapper {
+  background-color: var(--nav-bg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+nav .brand-logo {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding-left: 1rem;
+}
+nav a, nav a:visited {
+  color: #eceff1;
+}
+nav ul li a {
+  font-size: 0.875rem;
+}
+nav ul li a i.material-icons {
+  font-size: 1.3rem;
+  line-height: 64px;
+}
+
+/* ── Main content ───────────────────────────────────────────── */
+.main-content {
+  padding-top: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+/* ── Controls bar ───────────────────────────────────────────── */
+.controls-bar {
+  align-items: center;
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* Native select with Material-style appearance */
+#examples {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'"
+    " width='10' height='6'%3E%3Cpath fill='%2378909c'"
+    " d='M0 0l5 6 5-6z'/%3E%3C/svg%3E")
+    no-repeat right 0.6rem center;
+  border: 1px solid #b0bec5;
+  border-radius: 2px;
+  color: var(--code-fg);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.875rem;
+  height: 36px;
+  min-width: 180px;
+  padding: 0 2rem 0 0.75rem;
+  transition: border-color 0.15s;
+}
+#examples:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+#examples:hover {
+  border-color: var(--primary);
+}
+
+/* Run button */
+#run.btn {
+  background-color: var(--primary);
+  font-family: inherit;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 1.25rem;
+}
+#run.btn:hover, #run.btn:focus {
+  background-color: var(--primary-dark);
+}
+#run.btn i.material-icons {
+  font-size: 1.1rem;
+  line-height: 36px;
+  margin-right: 4px;
+}
+
+/* Debug switch */
+.switch-ctrl {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+.switch-lbl {
+  color: #78909c;
+  font-size: 0.875rem;
+}
+.switch label input[type=checkbox]:checked + .lever {
+  background-color: #80cbc4;
+}
+.switch label input[type=checkbox]:checked + .lever::after {
+  background-color: var(--primary);
+}
+
+/* ── Editor row ─────────────────────────────────────────────── */
+.editor-row {
+  display: flex;
+  gap: 1rem;
+  height: 380px;
+}
+.editor-card {
+  display: flex;
+  flex: 1;
   flex-direction: column;
-  flex-grow: 2;
-  margin-right: 2em;
-  max-width: 50%;
+  overflow: hidden;
+  padding: 0;
 }
 #input-box {
-  border: #def 1px solid;
-  color: #369;
-  flex-grow: 1;
-  font-family: 'Roboto Mono','Courier New',Courier,monospace;
-  font-size: 16px;
+  border: none;
+  box-sizing: border-box;
+  caret-color: var(--primary);
+  color: var(--code-fg);
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
   height: 100%;
-  line-height: 1.5em;
-  padding: 5px;
+  line-height: 1.7;
+  padding: 1rem;
   resize: none;
   width: 100%;
 }
+#input-box:focus {
+  border-left: 3px solid var(--primary);
+  outline: none;
+  padding-left: calc(1rem - 3px);
+}
 #output {
-  background-color: #ffe;
-  border: #def 1px solid;
-  flex-grow: 2;
-  font-size: 20px;
-  line-height: 1.5em;
-  max-width: 50%;
-  padding: 5px;
+  background-color: var(--output-bg);
+  flex: 1;
+  font-size: 1.5rem;
+  line-height: 1.7;
   overflow: auto;
+  padding: 1rem;
 }
+
+/* ── Debug panel ────────────────────────────────────────────── */
 #debug {
-  background-color: #efe;
-  border: #def 1px solid;
-  color: #999;
-  font-size: 14px;
-  min-height: 60px;
-  line-height: 2em;
-  margin-top: 1em;
-  padding: 4px;
-  width: 100%;
+  background-color: var(--debug-bg);
+  border-left: 3px solid var(--debug-border);
+  color: #546e7a;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.9;
+  margin-top: 0.75rem;
+  min-height: 2.25rem;
   overflow: auto;
+  padding: 0.5rem 1rem;
 }
+#debug:empty {
+  display: none;
+}
+.debug-error { color: #c62828; }
+.debug-list  { color: #2e7d32; }
+.debug-val   { color: #1565c0; }
+
+/* ── Documentation section ──────────────────────────────────── */
 #doc {
-  line-height: 1.5em;
-  margin: 3em 1em 1em 1em;
-  max-width: 960px;
-  width: 100%;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  margin-top: 3rem;
+  max-width: 860px;
 }
 #doc img {
-  width: 100%;
+  max-width: 100%;
 }
 #doc pre {
-  background-color: #f0f0f0;
+  background: #eceff1;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 13px;
   overflow-x: auto;
-  padding: 1em;
+  padding: 1rem;
 }
 #doc code {
-  font-size: 100%;
+  font-family: var(--mono);
 }
 #doc table {
   border-collapse: collapse;
-  border-top: 1px solid #eee;
-  overflow-x: auto;
   display: block;
+  overflow-x: auto;
+  width: 100%;
+}
+#doc table th {
+  background: #e0f2f1;
+  border-bottom: 2px solid #b2dfdb;
+  padding: 0.5em 1em;
+  text-align: left;
 }
 #doc table td {
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-  padding: .5em 1em;
+  border-top: 1px solid #e0e0e0;
+  padding: 0.5em 1em;
 }
-.red {
-  color: #f33;
+#doc h1 { font-size: 1.6rem; }
+#doc h2 { font-size: 1.3rem; }
+#doc h3 { font-size: 1.1rem; }
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.page-footer {
+  background-color: var(--nav-bg) !important;
+  padding: 0;
 }
-.blue {
-  color: #33f;
+.page-footer .footer-copyright {
+  background-color: rgba(0, 0, 0, 0.25) !important;
+  color: #90a4ae !important;
+  font-size: 0.85rem;
+  line-height: 3rem;
 }
-.list {
-  color: #090;
+.page-footer .footer-copyright a,
+.page-footer .footer-copyright a:visited {
+  color: #80cbc4 !important;
 }
 
-/* Responsive: stack editor vertically on narrow screens */
+/* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #editor {
+  .editor-row {
     flex-direction: column;
     height: auto;
-    min-height: unset;
   }
-  #input {
-    max-width: 100%;
-    margin-right: 0;
-    margin-bottom: 0.5em;
-    min-height: 200px;
+  .editor-card {
+    min-height: 220px;
   }
   #output {
-    max-width: 100%;
     min-height: 120px;
   }
-  #doc {
-    margin: 1.5em 0 1em 0;
+  nav .brand-logo {
+    font-size: 0.95rem;
+  }
+  .controls-bar {
+    gap: 0.5rem;
   }
 }

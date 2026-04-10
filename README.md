@@ -37,7 +37,7 @@ node . -i examples/fibonacci.meow -d
 Convert a simplified Meow file to a Meow file:
 
 ```shell
-node smeow2meow.js -i examples/fibonacci.smeow
+node src/smeow2meow.js -i examples/fibonacci.smeow
 ```
 
 ### Web-based Interpreter
@@ -49,6 +49,18 @@ yarn start
 ```
 
 ## Examples
+
+### Cat
+
+The simplest non-trivial program: [cat.meow](examples/cat.meow) prints 20 cat
+emojis followed by a newline.
+
+### Countdown
+
+[countdown.meow](examples/countdown.meow) counts down from 10 to 1, printing
+that many cat emojis on each line.
+
+### Fibonacci
 
 Print the Fibonacci numbers with cat emojis:
 

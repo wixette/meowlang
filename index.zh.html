@@ -14,13 +14,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<html>
+<html lang="zh">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>喵语言（Meowlang）解释器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
       body {
@@ -31,6 +32,14 @@
   <body>
     <div id="toolbar">
       <div id="title">🐈&nbsp;<a href="https://github.com/wixette/meowlang">喵语言</a></div>
+      <select id="examples" title="加载示例程序">
+        <option value="">-- 加载示例 --</option>
+        <option value="examples/cat.zh.meow">猫咪（Cat）</option>
+        <option value="examples/hello.zh.meow">你好（Hello）</option>
+        <option value="examples/countdown.zh.meow">倒计时（Countdown）</option>
+        <option value="examples/sum.zh.meow">求和（Sum）</option>
+        <option value="examples/fibonacci.zh.meow">斐波那契（Fibonacci）</option>
+      </select>
       <div id="run">运行</div>
       <div id="debug-switch-pane">
         调试开关&nbsp;<input id="debug-switch" type="checkbox">
@@ -38,7 +47,7 @@
     </div>
     <div id="editor">
       <div id="input">
-        <textarea id="input-box" placeholder="请在此输入喵语言程序..."></textarea>
+        <textarea id="input-box" placeholder="请在此输入喵语言程序，或从上方加载示例..."></textarea>
       </div>
       <div id="output"></div>
     </div>
@@ -49,12 +58,28 @@
     </div>
 
     <script type="module">
-      import {runMeowLang} from './meowlang.js';
+      import {runMeowLang} from './src/meowlang.js';
+
       const inputBox = document.getElementById('input-box');
-      inputBox.focus();
       const output = document.getElementById('output');
       const debug = document.getElementById('debug');
       const debugSwitch = document.getElementById('debug-switch');
+
+      // 从示例下拉菜单加载程序到编辑器。
+      document.getElementById('examples').addEventListener('change', async (e) => {
+        const path = e.target.value;
+        if (!path) return;
+        try {
+          const resp = await fetch(path);
+          inputBox.value = await resp.text();
+        } catch (err) {
+          debug.innerHTML = `<span class="red">加载示例失败：${err.message}</span>`;
+        }
+        e.target.value = '';
+        inputBox.focus();
+      });
+
+      // 运行当前编辑器中的喵语言程序。
       document.getElementById('run').addEventListener('click', () => {
         debug.innerHTML = '';
         output.innerHTML = '';
@@ -70,40 +95,27 @@
               output.innerHTML += '🐈';
             },
             (info) => {
-              if (!debugSwitch.checked) {
-                return;
-              }
-              debug.innerHTML += `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
+              if (!debugSwitch.checked) return;
+              debug.innerHTML +=
+                  `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
               if (info.ip != undefined) {
                 debug.innerHTML +=
-                    `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">` +
-                    `${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
+                    `<span>IP=</span><span class="blue">${info.ip}</span>` +
+                    ` op=<span class="blue">${info.opname}</span>` +
+                    ` operand=<span class="blue">${info.operand}</span><br>`;
               }
-            }
-        );
+            });
       });
     </script>
 
     <script src="./libs/marked.min.js"></script>
     <script>
-      const README_FILE = './README.zh.md';
-
-      function loadFile(url, onReadyCallback) {
-        var xmlHttp = new XMLHttpRequest();
-
-        xmlHttp.onreadystatechange = function() {
-          if (xmlHttp.readyState === XMLHttpRequest.DONE &&
-              xmlHttp.status === 200) {
-            onReadyCallback(xmlHttp.responseText);
-          }
-        };
-        xmlHttp.open("GET", url);
-        xmlHttp.send(null);
-      }
-
-      loadFile(README_FILE, (content) => {
-        document.getElementById('doc').innerHTML = marked(content);
-      });
+      // 在解释器下方渲染 README.zh.md 作为语言参考文档。
+      fetch('./README.zh.md')
+          .then((resp) => resp.text())
+          .then((content) => {
+            document.getElementById('doc').innerHTML = marked(content);
+          });
     </script>
   </body>
 </html>

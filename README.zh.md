@@ -37,7 +37,7 @@ node . -i examples/fibonacci.meow -d
 将简化版喵语言文件转换为喵语言文件：
 
 ```shell
-node smeow2meow.js -i examples/fibonacci.smeow
+node src/smeow2meow.js -i examples/fibonacci.smeow
 ```
 
 ### 在本地启动Web方式的解释器
@@ -49,6 +49,16 @@ yarn start
 ```
 
 ## 喵语言示例
+
+### 猫咪（Cat）
+
+最简单的示例程序：[cat.meow](examples/cat.meow) 打印 20 个猫咪符号，然后换行。
+
+### 倒计时（Countdown）
+
+[countdown.meow](examples/countdown.meow) 从 10 倒数到 1，每行打印对应数量的猫咪符号。
+
+### 斐波那契数列（Fibonacci）
 
 喵语言程序可以用猫的表情符号打印出斐波那契数列：
 

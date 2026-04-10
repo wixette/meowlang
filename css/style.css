@@ -17,18 +17,29 @@ div, img {
   background-color: #def;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
   margin: 0 0 1em 0;
+  gap: 0.5em;
 }
 #title {
   font-size: 110%;
   line-height: 3em;
-  padding: 0 1em 0 1em;
+  padding: 0 1em;
 }
 #title a:link, #title a:hover, #title a:visited, #title a:active {
   color: #333;
   text-decoration: none;
+}
+#examples {
+  background-color: #fff;
+  border: #9ac 1px solid;
+  color: #369;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 90%;
+  line-height: 2em;
+  padding: 0 0.5em;
 }
 #run {
   border: #9ac 1px solid;
@@ -37,11 +48,11 @@ div, img {
   cursor: pointer;
   font-size: 110%;
   line-height: 2em;
-  padding: 0 2em 0 2em;
+  padding: 0 2em;
   user-select: none;
 }
 #debug-switch-pane {
-  padding: 0 1em 0 1em;
+  padding: 0 1em;
 }
 #footer {
   border-top: #def 1px solid;
@@ -49,13 +60,15 @@ div, img {
   padding: 1em;
   text-align: center;
 }
+
+/* Editor: side-by-side on desktop */
 #editor {
   align-items: stretch;
   display: flex;
   flex-direction: row;
   height: 400px;
   justify-content: space-between;
-  min-height: 400px;
+  min-height: 300px;
 }
 #input {
   display: flex;
@@ -91,36 +104,40 @@ div, img {
   border: #def 1px solid;
   color: #999;
   font-size: 14px;
-  height: 200px;
+  min-height: 60px;
   line-height: 2em;
   margin-top: 1em;
-  min-height: 200px;
+  padding: 4px;
   width: 100%;
   overflow: auto;
 }
 #doc {
   line-height: 1.5em;
   margin: 3em 1em 1em 1em;
-  width: 960px;
+  max-width: 960px;
+  width: 100%;
 }
 #doc img {
   width: 100%;
 }
 #doc pre {
   background-color: #f0f0f0;
+  overflow-x: auto;
   padding: 1em;
 }
 #doc code {
   font-size: 100%;
 }
-#doc table{
+#doc table {
   border-collapse: collapse;
   border-top: 1px solid #eee;
+  overflow-x: auto;
+  display: block;
 }
-#doc table td{
+#doc table td {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
-  padding: .5em 1em .5em 1em
+  padding: .5em 1em;
 }
 .red {
   color: #f33;
@@ -130,4 +147,26 @@ div, img {
 }
 .list {
   color: #090;
+}
+
+/* Responsive: stack editor vertically on narrow screens */
+@media (max-width: 768px) {
+  #editor {
+    flex-direction: column;
+    height: auto;
+    min-height: unset;
+  }
+  #input {
+    max-width: 100%;
+    margin-right: 0;
+    margin-bottom: 0.5em;
+    min-height: 200px;
+  }
+  #output {
+    max-width: 100%;
+    min-height: 120px;
+  }
+  #doc {
+    margin: 1.5em 0 1em 0;
+  }
 }

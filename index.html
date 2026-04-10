@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,6 +27,14 @@
   <body>
     <div id="toolbar">
       <div id="title">🐈&nbsp;<a href="https://github.com/wixette/meowlang">Meowlang</a></div>
+      <select id="examples" title="Load an example program">
+        <option value="">-- Load an example --</option>
+        <option value="examples/cat.meow">Cat</option>
+        <option value="examples/hello.meow">Hello</option>
+        <option value="examples/countdown.meow">Countdown</option>
+        <option value="examples/sum.meow">Sum</option>
+        <option value="examples/fibonacci.meow">Fibonacci</option>
+      </select>
       <div id="run">Run</div>
       <div id="debug-switch-pane">
         Debug&nbsp;<input id="debug-switch" type="checkbox">
@@ -34,7 +42,7 @@
     </div>
     <div id="editor">
       <div id="input">
-        <textarea id="input-box" placeholder="Please enter a Meowlang program..."></textarea>
+        <textarea id="input-box" placeholder="Please enter a Meowlang program here, or load an example above..."></textarea>
       </div>
       <div id="output"></div>
     </div>
@@ -45,12 +53,28 @@
     </div>
 
     <script type="module">
-      import {runMeowLang} from './meowlang.js';
+      import {runMeowLang} from './src/meowlang.js';
+
       const inputBox = document.getElementById('input-box');
-      inputBox.focus();
       const output = document.getElementById('output');
       const debug = document.getElementById('debug');
       const debugSwitch = document.getElementById('debug-switch');
+
+      // Load an example program into the editor when selected.
+      document.getElementById('examples').addEventListener('change', async (e) => {
+        const path = e.target.value;
+        if (!path) return;
+        try {
+          const resp = await fetch(path);
+          inputBox.value = await resp.text();
+        } catch (err) {
+          debug.innerHTML = `<span class="red">Failed to load example: ${err.message}</span>`;
+        }
+        e.target.value = '';
+        inputBox.focus();
+      });
+
+      // Run the program currently in the editor.
       document.getElementById('run').addEventListener('click', () => {
         debug.innerHTML = '';
         output.innerHTML = '';
@@ -66,40 +90,27 @@
               output.innerHTML += '🐈';
             },
             (info) => {
-              if (!debugSwitch.checked) {
-                return;
-              }
-              debug.innerHTML += `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
+              if (!debugSwitch.checked) return;
+              debug.innerHTML +=
+                  `<span class="list">[${info.meowList.join(', ')}]</span><br>`;
               if (info.ip != undefined) {
                 debug.innerHTML +=
-                    `<span>IP=</span><span class="blue">${info.ip}</span> op=<span class="blue">` +
-                    `${info.opname}</span> operand=<span class="blue">${info.operand}</span><br>`;
+                    `<span>IP=</span><span class="blue">${info.ip}</span>` +
+                    ` op=<span class="blue">${info.opname}</span>` +
+                    ` operand=<span class="blue">${info.operand}</span><br>`;
               }
-            }
-        );
+            });
       });
     </script>
 
     <script src="./libs/marked.min.js"></script>
     <script>
-      const README_FILE = './README.md';
-
-      function loadFile(url, onReadyCallback) {
-        var xmlHttp = new XMLHttpRequest();
-
-        xmlHttp.onreadystatechange = function() {
-          if (xmlHttp.readyState === XMLHttpRequest.DONE &&
-              xmlHttp.status === 200) {
-            onReadyCallback(xmlHttp.responseText);
-          }
-        };
-        xmlHttp.open("GET", url);
-        xmlHttp.send(null);
-      }
-
-      loadFile(README_FILE, (content) => {
-        document.getElementById('doc').innerHTML = marked(content);
-      });
+      // Render README.md as the language reference below the interpreter.
+      fetch('./README.md')
+          .then((resp) => resp.text())
+          .then((content) => {
+            document.getElementById('doc').innerHTML = marked(content);
+          });
     </script>
   </body>
 </html>

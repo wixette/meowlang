@@ -62,7 +62,7 @@ nav ul li a i.material-icons {
 /* Native select with Material-style appearance.
  * Materialize CSS hides all <select> elements (display:none) expecting its
  * JS to replace them. We don't use Materialize JS, so force it visible. */
-#examples {
+select#examples {
   display: block !important;
   appearance: none;
   -webkit-appearance: none;

@@ -4,7 +4,7 @@
 
 ## 使用喵语言解释器
 
-请用浏览器访问[喵语言解释器](https://pingpingze.com/meowlang/index.zh.html)。
+请用浏览器访问[喵语言解释器](https://wixette.github.io/meowlang/)。
 
 ## 从源代码运行
 
@@ -32,6 +32,14 @@ node . -i examples/fibonacci.meow
 node . -i examples/fibonacci.meow -d
 ```
 
+### 将 .smeow 文件转换为 .meow 文件
+
+将简化版喵语言文件转换为喵语言文件：
+
+```shell
+node smeow2meow.js -i examples/fibonacci.smeow
+```
+
 ### 在本地启动Web方式的解释器
 
 启动本地Web服务器：
@@ -46,8 +54,7 @@ yarn start
 
 ![Fibonacci](examples/fibonacci_with_meow.png)
 
-打印斐波那契数列的喵语言程序如下。参见[Fibonacci source
-code](examples/fibonacci.meow)。以下代码用英语口音的“喵”（meow）写成:
+打印斐波那契数列的喵语言程序如下。参见[Fibonacci source code](examples/fibonacci.meow)。以下代码用英语口音的”喵”（meow）写成：
 
 ```text
 MeowMeowMeowMeowMeowMeowMeowMeow;
@@ -85,8 +92,7 @@ MeowMeowMeow;
 MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
 ```
 
-用汉语口音的“喵”写成的斐波那契数列代码如下。参见[Fibonacci source
-code](examples/fibonacci.zh.meow)。
+用汉语口音的”喵”写成的斐波那契数列代码如下。参见[Fibonacci source code](examples/fibonacci.zh.meow)。
 
 ```text
 喵喵喵喵喵喵喵喵;
@@ -128,7 +134,7 @@ code](examples/fibonacci.zh.meow)。
 
 ### 喵列表（Meow List）
 
-一个合法的喵语言程序其实是一个喵列表（Meow List）的文本形式.
+一个合法的喵语言程序其实是一个喵列表（Meow List）的文本形式。
 
 一个喵列表是由一系列喵元素组成的。
 
@@ -151,7 +157,7 @@ code](examples/fibonacci.zh.meow)。
 一个喵符号就是用文本方式表示的一声猫叫。喵语言支持以下不同口音的猫叫形式，它们在
 程序中可以任意互换使用：
 
-* 英语：`Meow`, 或 `Miaow`，`Meaw`
+* 英语：`Meow`，或 `Miaow`，`Meaw`
 * 法语：`Miaou`
 * 汉语：`喵`
 * 汉语拼音：`Miao`
@@ -159,13 +165,13 @@ code](examples/fibonacci.zh.meow)。
 * 日语片假名：`ニャー`
 * 俄语：`Мяу`
 
-喵符号在程序中不区分大小写。例如, `Meow`、`meow`、`MEOW`都是同样的喵符号。
+喵符号在程序中不区分大小写。例如，`Meow`、`meow`、`MEOW`都是同样的喵符号。
 
 ### 喵语言程序的文件格式
 
 文本方式的喵语言程序用分号`";"`来结束每个喵元素。
 
-例如，以下代码包含5个喵元素，他们的值分别是0，1，2，3，4：
+例如，以下代码包含5个喵元素，它们的值分别是0，1，2，3，4：
 
 ```text
 ;
@@ -193,7 +199,7 @@ Miaou Miaou Miaou;
 Miaou 喵 Meow Miao;
 ```
 
-建议喵语言程序的文件使用后缀`".meow"`.
+建议喵语言程序的文件使用后缀`".meow"`。
 
 ### 简化版喵语言程序的文件格式
 
@@ -208,7 +214,7 @@ Miaou 喵 Meow Miao;
 4
 ```
 
-这种简化版的喵语言程序建议使用文件后缀`".smeow"`.
+这种简化版的喵语言程序建议使用文件后缀`".smeow"`。
 
 ### 喵指令集（Meow Instruction Set）
 
@@ -226,7 +232,7 @@ Miaou 喵 Meow Miao;
 | 9 | `JE` | 如果喵列表尾部最后一个元素的值是 0，则将 `IP` 设置为 `N`，否则 `IP` 增加 2 | `IP = (T == 0) ? N : IP + 2` |
 | >=10 | `NOP` | 无操作 | `IP++` |
 
-* `IP`: 指令指针（Instruction Pointer），指向 Meow List 中当前要执行的指令位置。程序刚开始运行时，IP 的值为 0。
+* `IP`: 指令指针（Instruction Pointer）。
 * `T`: 喵列表尾部最后一个元素的值。
 * `N`: 当前指令所在元素的下一个元素的值。
 * `E(N)`: 喵列表中的第 N 个元素。N 是当前指令所在元素的下一个元素的值。

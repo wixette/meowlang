@@ -36,7 +36,7 @@ const argv = yargs(hideBin(process.argv))
       alias: 'l',
       type: 'string',
       choices: Object.keys(MEOW_TOKENS),
-      default: 'en',
+      default: 'en_1',
       description: 'The language of the Meow token',
     })
     .argv;

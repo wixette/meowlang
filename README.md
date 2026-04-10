@@ -32,6 +32,14 @@ Turn on debug info when running a Meow program:
 node . -i examples/fibonacci.meow -d
 ```
 
+### Convert .smeow to .meow
+
+Convert a simplified Meow file to a Meow file:
+
+```shell
+node smeow2meow.js -i examples/fibonacci.smeow
+```
+
 ### Web-based Interpreter
 
 Start a local server with
@@ -158,11 +166,11 @@ interchangeable in Meowlang programs.
 * `喵` in Chinese
 * `Miao` in Chinese Pinyin
 * `Miau` in German
-* `ニャー` in Japanese Katakana (Katakana because its onomatopoeia)
+* `ニャー` in Japanese Katakana (Katakana because it's onomatopoeia)
 * `Мяу` in Russian
 
 Meow tokens are case-insensitive. For example, `Meow`, `meow`, and `MEOW` are
-the same things.
+the same.
 
 ### Meow File Format
 
@@ -181,7 +189,7 @@ Meow Meow Meow Meow;
 ```
 
 White spaces including `" "`, `"\t"` and `"\n"` are used for formatting purposes
-only, and will be ignored when the program is executed. You may layout your code
+only, and will be ignored when the program is executed. You may lay out your code
 in many different and interesting ways. For example, the following code is an
 equivalent representation of the above code:
 
@@ -189,7 +197,7 @@ equivalent representation of the above code:
 ; M e o w ; MeowMeow ; MeowMeowMeow ; MeowMeowMeowMeow ;
 ```
 
-The Meow tokens in the supported languages can be mixed up in a same program.
+The Meow tokens in the supported languages can be mixed in the same program.
 For example:
 
 ```text
@@ -231,7 +239,7 @@ The preferred file extension of the simplified Meow file format is `".smeow"`.
 | 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
 | 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
 | 8 | `JMP` | Set `IP` to `N`. | `IP = N` |
-| 9 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, continue to execute the next after the next instruction. | `IP = (T == 0) ? N : IP + 2` |
+| 9 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, skip the operand and continue execution. | `IP = (T == 0) ? N : IP + 2` |
 | >=10 | `NOP` | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.

@@ -39,10 +39,6 @@ nav a, nav a:visited {
 nav ul li a {
   font-size: 0.875rem;
 }
-nav ul li a i.material-icons {
-  font-size: 1.3rem;
-  line-height: 64px;
-}
 
 /* ── Main content ───────────────────────────────────────────── */
 .main-content {

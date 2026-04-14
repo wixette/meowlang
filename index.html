@@ -128,20 +128,30 @@
           });
 
       // Run the program currently in the editor.
-      document.getElementById('run').addEventListener('click', () => {
+      document.getElementById('run').addEventListener('click', async () => {
         debug.innerHTML = '';
-        output.innerHTML = '';
-        runMeowLang(
+        output.innerText = '';
+        await runMeowLang(
             inputBox.value,
             (error) => {
               debug.innerHTML =
                   `<span class="debug-error">${error}</span>`;
             },
             () => {
-              output.innerHTML += '<br>';
+              output.innerText += '\n';
             },
             () => {
-              output.innerHTML += '🐈';
+              output.innerText += '🐈';
+            },
+            (char) => {
+              output.innerText += char;
+            },
+            () => {
+              const result = prompt('Meow is SNIFFing (enter one character):');
+              return Promise.resolve(result ? result.charCodeAt(0) : 0);
+            },
+            () => {
+              output.innerText = '';
             },
             (info) => {
               if (!debugSwitch.checked) return;

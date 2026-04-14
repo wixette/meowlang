@@ -1,34 +1,39 @@
-// Moving Cat Game
-// E(2): x position
-// E(3): direction (1=Right, 0=Left) - simplified for now
-2
-0    // E(2) x=0
-2
-1    // E(3) dir=1
-10   // START at index 4
-13   // SCRATCH (Clear)
-4
-2    // LOAD x
-2
-32   // Space
-10   // YOWL (Print space)
-2
-1
-7    // SUB
-9
-15   // If x=0, skip space loop
-8
-8    // JMP to print space
-1    // MEOW (Print cat at x)
-2
-100
-12   // NAP 100ms
-4
-2    // LOAD x
-2
-1
-6    // ADD
-5
-2    // x = x + 1
-8
-4    // JMP START
+// Moving Cat Game (Robust Version)
+8    // [0] JMP
+3    // [1] to index 3
+0    // [2] Variable: x position
+13   // [3] START: SCRATCH (Clear)
+4    // [4] LOAD
+2    // [5] x from index 2
+2    // [6] PUSH
+32   // [7] ASCII Space
+10   // [8] YOWL (Print space)
+2    // [9] PUSH
+1    // [10] 1
+7    // [11] SUB
+9    // [12] JE
+16   // [13] to index 16 (Exit space loop)
+8    // [14] JMP
+8    // [15] back to YOWL
+1    // [16] MEOW (Print cat at x)
+0    // [17] RET (Newline)
+2    // [18] PUSH
+100    // [19] 100ms
+12   // [20] NAP
+4    // [21] LOAD
+2    // [22] x from index 2
+2    // [23] PUSH
+1    // [24] 1
+6    // [25] ADD
+5    // [26] SAVE
+2    // [27] to x at index 2
+2    // [28] PUSH
+20   // [29] Max x = 20
+4    // [30] LOAD
+2    // [31] x
+7    // [32] SUB
+9    // [33] JE
+37   // [34] to index 37 (End)
+8    // [35] JMP
+3    // [36] to START
+0    // [37] RET (End)

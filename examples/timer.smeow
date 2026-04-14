@@ -1,16 +1,23 @@
-2    // PUSH
-5    // Start count
-10   // NOP (START loop at index 2)
-1    // MEOW
-0    // RET
-2    // PUSH
-1000 // 1000ms
-12   // NAP
-2    // PUSH
-1    // 1
-7    // SUB (count = count - 1)
-9    // JE
-20   // JMP to end if 0
-8    // JMP
-2    // Loop back to index 2
-0    // RET (end)
+8    // [0] JMP
+3    // [1] to index 3
+5    // [2] Variable: Counter (Initial value 5)
+4    // [3] LOAD
+2    // [4] index 2
+1    // [5] MEOW
+0    // [6] RET
+2    // [7] PUSH
+1000 // [8] 1000ms
+12   // [9] NAP
+4    // [10] LOAD
+2    // [11] index 2
+2    // [12] PUSH
+1    // [13] 1
+7    // [14] SUB
+5    // [15] SAVE
+2    // [16] index 2
+9    // [17] JE
+22   // [18] to index 22 (End)
+3    // [19] POP (Clean up stack)
+8    // [20] JMP
+3    // [21] to index 3
+0    // [22] RET (Final Newline)

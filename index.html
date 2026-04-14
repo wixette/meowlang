@@ -145,21 +145,32 @@
               debug.innerHTML =
                   `<span class="debug-error">${error}</span>`;
             },
-            () => {
+            async () => {
               output.innerText += '\n';
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            () => {
+            async () => {
               output.innerText += '🐈';
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            (char) => {
+            async (char) => {
               output.innerText += char;
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            () => {
-              const result = prompt('Meow is SNIFFing (enter one character):');
-              return Promise.resolve(result ? result.charCodeAt(0) : 0);
+            async () => {
+              // Yield to ensure previous outputs are painted before the blocking prompt.
+              await new Promise((resolve) => setTimeout(resolve, 0));
+              const result = prompt(
+                  'Meow is SNIFFing (enter one character):\n' +
+                  'Leave empty or click Cancel to send a 0 (usually ends the loop).');
+              return result ? result.charCodeAt(0) : 0;
             },
-            () => {
+            async () => {
               output.innerText = '';
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
             (info) => {
               if (!debugSwitch.checked) return;

@@ -151,21 +151,32 @@
               debug.innerHTML =
                   `<span class="debug-error">${error}</span>`;
             },
-            () => {
+            async () => {
               output.innerText += '\n';
+              // 出让执行权，让浏览器有机会更新 UI 渲染。
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            () => {
+            async () => {
               output.innerText += '🐈';
+              // 出让执行权，让浏览器有机会更新 UI 渲染。
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            (char) => {
+            async (char) => {
               output.innerText += char;
+              // 出让执行权，让浏览器有机会更新 UI 渲染。
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            () => {
-              const result = prompt('喵正在嗅（SNIFFing）环境（请输入一个字符）：');
-              return Promise.resolve(result ? result.charCodeAt(0) : 0);
+            async () => {
+              // 出让执行权，确保 prompt 弹出前之前的输出已渲染。
+              await new Promise((resolve) => setTimeout(resolve, 0));
+              const result = prompt(
+                  '喵正在嗅（SNIFFing）环境（请输入一个字符）：\n' +
+                  '保持为空或点击“取消”将发送 0（通常用于结束循环）。');
+              return result ? result.charCodeAt(0) : 0;
             },
-            () => {
+            async () => {
               output.innerText = '';
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
             (info) => {
               if (!debugSwitch.checked) return;

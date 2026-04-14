@@ -253,11 +253,11 @@ function removeWhiteSpaces(str) {
  *
  * @param {number[]} meowList The Meow List to execute (mutated in place by
  *     SAVE and growth from PUSH/LOAD).
- * @param {(() => void) | undefined} retCallback
- * @param {(() => void) | undefined} meowCallback
- * @param {((char: string) => void) | undefined} yowlCallback
+ * @param {(() => void | Promise<void>) | undefined} retCallback
+ * @param {(() => void | Promise<void>) | undefined} meowCallback
+ * @param {((char: string) => void | Promise<void>) | undefined} yowlCallback
  * @param {(() => Promise<number>) | undefined} sniffCallback
- * @param {(() => void) | undefined} scratchCallback
+ * @param {(() => void | Promise<void>) | undefined} scratchCallback
  * @param {((info: RuntimeInfo) => void) | undefined} runtimeListener
  */
 async function execute(meowList, retCallback, meowCallback,
@@ -299,8 +299,8 @@ async function execute(meowList, retCallback, meowCallback,
       // 0: RET — print a newline.
       opname: 'RET',
       getOperand: () => undefined,
-      action: (ip) => {
-        retCallback != undefined ? retCallback() : console.log('');
+      action: async (ip) => {
+        retCallback != undefined ? await retCallback() : console.log('');
         return ip + 1;
       },
     },
@@ -308,11 +308,11 @@ async function execute(meowList, retCallback, meowCallback,
       // 1: MEOW — print T cat emojis (T = current tail value).
       opname: 'MEOW',
       getOperand: () => undefined,
-      action: (ip) => {
+      action: async (ip) => {
         const tail = meowList[meowList.length - 1];
         for (let i = 0; i < tail; i++) {
           meowCallback != undefined ?
-              meowCallback() :
+              await meowCallback() :
               console.log(CAT_EMOJI);
         }
         return ip + 1;
@@ -322,7 +322,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 2: PUSH N — push the value N to the tail of the Meow List.
       opname: 'PUSH',
       getOperand: (ip) => nextOperand(ip),
-      action: (ip) => {
+      action: async (ip) => {
         meowList.push(nextOperand(ip));
         return ip + 2;
       },
@@ -331,7 +331,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 3: POP — remove the tail element from the Meow List.
       opname: 'POP',
       getOperand: () => undefined,
-      action: (ip) => {
+      action: async (ip) => {
         meowList.pop();
         return ip + 1;
       },
@@ -340,7 +340,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 4: LOAD N — push a copy of E(N) to the tail.
       opname: 'LOAD',
       getOperand: (ip) => nextOperand(ip),
-      action: (ip) => {
+      action: async (ip) => {
         const n = nextOperand(ip);
         checkIndex(n);
         meowList.push(meowList[n]);
@@ -351,7 +351,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 5: SAVE N — copy the tail value into E(N) (tail is not popped).
       opname: 'SAVE',
       getOperand: (ip) => nextOperand(ip),
-      action: (ip) => {
+      action: async (ip) => {
         const n = nextOperand(ip);
         checkIndex(n);
         meowList[n] = meowList[meowList.length - 1];
@@ -362,7 +362,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 6: ADD — pop the last two elements, push their sum.
       opname: 'ADD',
       getOperand: () => undefined,
-      action: (ip) => {
+      action: async (ip) => {
         const a = meowList[meowList.length - 2];
         const b = meowList[meowList.length - 1];
         meowList.pop();
@@ -376,7 +376,7 @@ async function execute(meowList, retCallback, meowCallback,
       //          floored at 0 (no negative values in Meowlang).
       opname: 'SUB',
       getOperand: () => undefined,
-      action: (ip) => {
+      action: async (ip) => {
         const a = meowList[meowList.length - 2];
         const b = meowList[meowList.length - 1];
         meowList.pop();
@@ -389,7 +389,7 @@ async function execute(meowList, retCallback, meowCallback,
       // 8: JMP N — set IP to N (unconditional jump).
       opname: 'JMP',
       getOperand: (ip) => nextOperand(ip),
-      action: (ip) => {
+      action: async (ip) => {
         const n = nextOperand(ip);
         checkIndex(n);
         return n;
@@ -400,7 +400,7 @@ async function execute(meowList, retCallback, meowCallback,
       //           (skip the operand and continue with the next instruction).
       opname: 'JE',
       getOperand: (ip) => nextOperand(ip),
-      action: (ip) => {
+      action: async (ip) => {
         const n = nextOperand(ip);
         checkIndex(n);
         return meowList[meowList.length - 1] === 0 ? n : ip + 2;
@@ -410,12 +410,14 @@ async function execute(meowList, retCallback, meowCallback,
       // 10: YOWL — ASCII Output. Pop tail and print char.
       opname: 'YOWL',
       getOperand: () => undefined,
-      action: (ip) => {
+      action: async (ip) => {
         const val = meowList.pop() ?? 0;
         const char = String.fromCharCode(val);
-        yowlCallback != undefined ?
-            yowlCallback(char) :
-            process.stdout.write(char);
+        if (yowlCallback != undefined) {
+          await yowlCallback(char);
+        } else {
+          process.stdout.write(char);
+        }
         return ip + 1;
       },
     },
@@ -443,8 +445,12 @@ async function execute(meowList, retCallback, meowCallback,
       // 13: SCRATCH — Clear Screen.
       opname: 'SCRATCH',
       getOperand: () => undefined,
-      action: (ip) => {
-        scratchCallback != undefined ? scratchCallback() : console.clear();
+      action: async (ip) => {
+        if (scratchCallback != undefined) {
+          await scratchCallback();
+        } else {
+          console.clear();
+        }
         return ip + 1;
       },
     },
@@ -452,7 +458,7 @@ async function execute(meowList, retCallback, meowCallback,
       // ≥14: NOP — no operation.
       opname: 'NOP',
       getOperand: () => undefined,
-      action: (ip) => ip + 1,
+      action: async (ip) => ip + 1,
     },
   ];
 

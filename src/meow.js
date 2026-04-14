@@ -25,6 +25,7 @@
  */
 
 import fs from 'fs';
+import readline from 'readline';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {runMeowLang, CAT_EMOJI} from './meowlang.js';
@@ -42,22 +43,61 @@ const argv = yargs(hideBin(process.argv))
     })
     .argv;
 
+/**
+ * Creates a sniff callback that reads a single character from stdin.
+ * @return {() => Promise<number>}
+ */
+function makeSniffCallback() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    terminal: false,
+  });
+
+  return () => new Promise((resolve) => {
+    // We want to read exactly one character.
+    // Node's stdin in raw mode is better for this.
+    const wasRaw = process.stdin.isRaw;
+    if (process.stdin.setRawMode) {
+      process.stdin.setRawMode(true);
+    }
+    process.stdin.once('data', (data) => {
+      if (process.stdin.setRawMode) {
+        process.stdin.setRawMode(wasRaw);
+      }
+      // If Ctrl+C, exit.
+      if (data[0] === 3) {
+        process.exit();
+      }
+      resolve(data[0]);
+    });
+  });
+}
+
 if (argv.input) {
   const code = fs.readFileSync(/** @type {string} */ (argv.input), 'utf8');
-  runMeowLang(
-      code,
-      (message) => {
-        console.error(message);
-      },
-      () => {
-        process.stdout.write('\n');
-      },
-      () => {
-        process.stdout.write(CAT_EMOJI);
-      },
-      argv.debug ?
-          (info) => {
-            console.log(info);
-          } :
-          undefined);
+  (async () => {
+    await runMeowLang(
+        code,
+        (message) => {
+          console.error(message);
+        },
+        () => {
+          process.stdout.write('\n');
+        },
+        () => {
+          process.stdout.write(CAT_EMOJI);
+        },
+        (char) => {
+          process.stdout.write(char);
+        },
+        makeSniffCallback(),
+        () => {
+          console.clear();
+        },
+        argv.debug ?
+            (info) => {
+              console.log(info);
+            } :
+            undefined);
+  })();
 }

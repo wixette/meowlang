@@ -24,20 +24,26 @@ import {
  * Runs a Meowlang program (either format) and returns collected output.
  *
  * @param {string} code Source code in .meow or .smeow format.
- * @return {{ cats: string[], newlines: string[], errors: string[] }}
+ * @param {number} [sniffValue=0] The value to return for SNIFF.
+ * @return {Promise<{ cats: string[], newlines: string[], errors: string[], yowls: string[], scratchedCount: number }>}
  */
-function run(code) {
+async function run(code, sniffValue = 0) {
   /** @type {string[]} */ const cats = [];
   /** @type {string[]} */ const newlines = [];
   /** @type {string[]} */ const errors = [];
-  runMeowLang(
+  /** @type {string[]} */ const yowls = [];
+  let scratchedCount = 0;
+  await runMeowLang(
       code,
       (e) => errors.push(e),
       () => newlines.push('\n'),
       () => cats.push(CAT_EMOJI),
+      (char) => yowls.push(char),
+      async () => sniffValue,
+      () => { scratchedCount++; },
       undefined,
   );
-  return {cats, newlines, errors};
+  return {cats, newlines, errors, yowls, scratchedCount};
 }
 
 /**
@@ -45,10 +51,11 @@ function run(code) {
  * are passed through parseSimplified automatically).
  *
  * @param {number[]} list
- * @return {{ cats: string[], newlines: string[], errors: string[] }}
+ * @param {number} [sniffValue=0] The value to return for SNIFF.
+ * @return {Promise<{ cats: string[], newlines: string[], errors: string[], yowls: string[], scratchedCount: number }>}
  */
-function runList(list) {
-  return run(list.join('\n'));
+async function runList(list, sniffValue = 0) {
+  return await run(list.join('\n'), sniffValue);
 }
 
 // ─── parseMeow ───────────────────────────────────────────────────────────────
@@ -162,169 +169,200 @@ describe('parseSimplified', () => {
 
 describe('runMeowLang — opcodes', () => {
   // ── RET (0) ──────────────────────────────────────────────────────────────
-  it('RET (0): calls retCallback once', () => {
+  it('RET (0): calls retCallback once', async () => {
     // Program: [0] — a single RET instruction.
-    const {newlines, cats} = runList([0]);
+    const {newlines, cats} = await runList([0]);
     expect(newlines).toHaveLength(1);
     expect(cats).toHaveLength(0);
   });
 
-  it('RET (0): multiple RET instructions each call retCallback', () => {
+  it('RET (0): multiple RET instructions each call retCallback', async () => {
     // [0, 0, 0] — three RET instructions.
-    const {newlines} = runList([0, 0, 0]);
+    const {newlines} = await runList([0, 0, 0]);
     expect(newlines).toHaveLength(3);
   });
 
   // ── MEOW (1) ─────────────────────────────────────────────────────────────
-  it('MEOW (1): prints T cat emojis where T is the tail value', () => {
+  it('MEOW (1): prints T cat emojis where T is the tail value', async () => {
     // PUSH 4, MEOW — tail is 4 so 4 cats are printed.
-    const {cats, newlines} = runList([2, 4, 1]);
+    const {cats, newlines} = await runList([2, 4, 1]);
     expect(cats).toHaveLength(4);
     expect(newlines).toHaveLength(0);
   });
 
-  it('MEOW (1): prints 0 cats when tail is 0', () => {
+  it('MEOW (1): prints 0 cats when tail is 0', async () => {
     // PUSH 0, MEOW — tail is 0.
-    const {cats} = runList([2, 0, 1]);
+    const {cats} = await runList([2, 0, 1]);
     expect(cats).toHaveLength(0);
   });
 
   // ── PUSH (2) ─────────────────────────────────────────────────────────────
-  it('PUSH (2): pushes operand N onto the tail', () => {
+  it('PUSH (2): pushes operand N onto the tail', async () => {
     // PUSH 7, MEOW — should see 7 cats.
-    const {cats} = runList([2, 7, 1]);
+    const {cats} = await runList([2, 7, 1]);
     expect(cats).toHaveLength(7);
   });
 
   // ── POP (3) ──────────────────────────────────────────────────────────────
-  it('POP (3): removes the tail element', () => {
+  it('POP (3): removes the tail element', async () => {
     // PUSH 9, POP, PUSH 2, MEOW — after POP the 9 is gone; MEOW uses 2.
-    const {cats} = runList([2, 9, 3, 2, 2, 1]);
+    const {cats} = await runList([2, 9, 3, 2, 2, 1]);
     expect(cats).toHaveLength(2);
   });
 
   // ── LOAD (4) ─────────────────────────────────────────────────────────────
-  it('LOAD (4): pushes a copy of E(N) onto the tail', () => {
+  it('LOAD (4): pushes a copy of E(N) onto the tail', async () => {
     // [8, 4, 6, 10, 4, 2, 1]
     // JMP→4, data:6, NOP, LOAD[2](=6), MEOW → 6 cats.
-    const {cats} = runList([8, 4, 6, 10, 4, 2, 1]);
+    const {cats} = await runList([8, 4, 6, 10, 4, 2, 1]);
     expect(cats).toHaveLength(6);
   });
 
-  it('LOAD (4): does not remove the source element', () => {
+  it('LOAD (4): does not remove the source element', async () => {
     // Load the same element twice; total cats = 5 + 5 = 10.
     // [8, 4, 5, 10, 4, 2, 1, 4, 2, 1]
     // JMP→4, data:5, NOP, LOAD[2], MEOW, LOAD[2], MEOW.
-    const {cats} = runList([8, 4, 5, 10, 4, 2, 1, 4, 2, 1]);
+    const {cats} = await runList([8, 4, 5, 10, 4, 2, 1, 4, 2, 1]);
     expect(cats).toHaveLength(10);
   });
 
   // ── SAVE (5) ─────────────────────────────────────────────────────────────
-  it('SAVE (5): copies tail value into E(N) without popping', () => {
+  it('SAVE (5): copies tail value into E(N) without popping', async () => {
     // PUSH 7, SAVE→[3], POP, LOAD[3], MEOW — loads the saved value 7.
     // [2, 7, 5, 3, 3, 4, 3, 1]
-    const {cats} = runList([2, 7, 5, 3, 3, 4, 3, 1]);
+    const {cats} = await runList([2, 7, 5, 3, 3, 4, 3, 1]);
     expect(cats).toHaveLength(7);
   });
 
-  it('SAVE (5): overwrites an existing value at the target index', () => {
+  it('SAVE (5): overwrites an existing value at the target index', async () => {
     // JMP→4, data:1, NOP, PUSH 9, SAVE→[2], POP, LOAD[2], MEOW.
     // After SAVE, E(2) changes from 1 to 9 → 9 cats.
     // [8, 4, 1, 10, 2, 9, 5, 2, 3, 4, 2, 1]
-    const {cats} = runList([8, 4, 1, 10, 2, 9, 5, 2, 3, 4, 2, 1]);
+    const {cats} = await runList([8, 4, 1, 10, 2, 9, 5, 2, 3, 4, 2, 1]);
     expect(cats).toHaveLength(9);
   });
 
   // ── ADD (6) ──────────────────────────────────────────────────────────────
-  it('ADD (6): pops two elements and pushes their sum', () => {
+  it('ADD (6): pops two elements and pushes their sum', async () => {
     // PUSH 3, PUSH 4, ADD, MEOW → 7 cats.
-    const {cats} = runList([2, 3, 2, 4, 6, 1]);
+    const {cats} = await runList([2, 3, 2, 4, 6, 1]);
     expect(cats).toHaveLength(7);
   });
 
-  it('ADD (6): adding zero leaves the other value unchanged', () => {
-    const {cats} = runList([2, 5, 2, 0, 6, 1]);
+  it('ADD (6): adding zero leaves the other value unchanged', async () => {
+    const {cats} = await runList([2, 5, 2, 0, 6, 1]);
     expect(cats).toHaveLength(5);
   });
 
   // ── SUB (7) ──────────────────────────────────────────────────────────────
-  it('SUB (7): computes second-to-last minus last', () => {
+  it('SUB (7): computes second-to-last minus last', async () => {
     // PUSH 8, PUSH 3, SUB → 5, MEOW → 5 cats.
-    const {cats} = runList([2, 8, 2, 3, 7, 1]);
+    const {cats} = await runList([2, 8, 2, 3, 7, 1]);
     expect(cats).toHaveLength(5);
   });
 
-  it('SUB (7): floors at 0 for negative results', () => {
+  it('SUB (7): floors at 0 for negative results', async () => {
     // PUSH 2, PUSH 9, SUB → max(2-9, 0) = 0, MEOW → 0 cats.
-    const {cats} = runList([2, 2, 2, 9, 7, 1]);
+    const {cats} = await runList([2, 2, 2, 9, 7, 1]);
     expect(cats).toHaveLength(0);
   });
 
-  it('SUB (7): 0 minus 0 equals 0', () => {
-    const {cats} = runList([2, 0, 2, 0, 7, 1]);
+  it('SUB (7): 0 minus 0 equals 0', async () => {
+    const {cats} = await runList([2, 0, 2, 0, 7, 1]);
     expect(cats).toHaveLength(0);
   });
 
   // ── JMP (8) ──────────────────────────────────────────────────────────────
-  it('JMP (8): jumps unconditionally, skipping elements in between', () => {
+  it('JMP (8): jumps unconditionally, skipping elements in between', async () => {
     // [8, 4, 0, 10, 2, 1, 1, 3, 0]
     // JMP→4 skips the RET at [2]; PUSH 1, MEOW, POP, RET.
     // Without JMP we'd get 2 newlines (from [2] and [8]); with JMP, 1.
-    const {newlines, cats} = runList([8, 4, 0, 10, 2, 1, 1, 3, 0]);
+    const {newlines, cats} = await runList([8, 4, 0, 10, 2, 1, 1, 3, 0]);
     expect(newlines).toHaveLength(1);
     expect(cats).toHaveLength(1);
   });
 
   // ── JE (9) ───────────────────────────────────────────────────────────────
-  it('JE (9): jumps to N when tail is 0', () => {
+  it('JE (9): jumps to N when tail is 0', async () => {
     // PUSH 0 → JE→5 (taken, T=0) → POP → PUSH 2 → MEOW → POP
     // RET at [4] is skipped entirely. Two cleanup POPs keep the stack balanced.
-    const {newlines, cats} = runList([2, 0, 9, 5, 0, 3, 2, 2, 1, 3]);
+    const {newlines, cats} = await runList([2, 0, 9, 5, 0, 3, 2, 2, 1, 3]);
     expect(newlines).toHaveLength(0); // RET at [4] was skipped
     expect(cats).toHaveLength(2);
   });
 
-  it('JE (9): does not jump when tail is non-zero', () => {
+  it('JE (9): does not jump when tail is non-zero', async () => {
     // PUSH 1 → JE→5 (not taken, T=1) → RET → POP → PUSH 2 → MEOW → POP
     // JE does not jump; RET executes. Two cleanup POPs keep the stack balanced.
-    const {newlines, cats} = runList([2, 1, 9, 5, 0, 3, 2, 2, 1, 3]);
+    const {newlines, cats} = await runList([2, 1, 9, 5, 0, 3, 2, 2, 1, 3]);
     expect(newlines).toHaveLength(1); // RET was executed
     expect(cats).toHaveLength(2);
   });
 
-  // ── NOP (≥10) ────────────────────────────────────────────────────────────
-  it('NOP (≥10): produces no output for any value ≥ 10', () => {
-    const {cats, newlines} = runList([10, 11, 99, 1000]);
+  // ── NOP (≥14) ────────────────────────────────────────────────────────────
+  it('NOP (≥14): produces no output for any value ≥ 14', async () => {
+    const {cats, newlines} = await runList([14, 15, 99, 1000]);
     expect(cats).toHaveLength(0);
     expect(newlines).toHaveLength(0);
+  });
+});
+
+describe('runMeowLang — 0.4.0 opcodes', () => {
+  // ── YOWL (10) ────────────────────────────────────────────────────────────
+  it('YOWL (10): prints one character from the tail value', async () => {
+    // PUSH 65 ('A'), YOWL.
+    const {yowls} = await runList([2, 65, 10]);
+    expect(yowls).toEqual(['A']);
+  });
+
+  // ── SNIFF (11) ───────────────────────────────────────────────────────────
+  it('SNIFF (11): pushes the input character value onto the tail', async () => {
+    // SNIFF (returns 42), MEOW.
+    const {cats} = await runList([11, 1], 42);
+    expect(cats).toHaveLength(42);
+  });
+
+  // ── NAP (12) ─────────────────────────────────────────────────────────────
+  it('NAP (12): pauses execution for T milliseconds', async () => {
+    const start = Date.now();
+    // PUSH 50, NAP.
+    await runList([2, 50, 12]);
+    const end = Date.now();
+    expect(end - start).toBeGreaterThanOrEqual(45); // allowing a small margin
+  });
+
+  // ── SCRATCH (13) ─────────────────────────────────────────────────────────
+  it('SCRATCH (13): calls scratchCallback', async () => {
+    const {scratchedCount} = await runList([13, 13, 13]);
+    expect(scratchedCount).toBe(3);
   });
 });
 
 // ─── runMeowLang — error handling ────────────────────────────────────────────
 
 describe('runMeowLang — error handling', () => {
-  it('reports a parser error for invalid .meow source', () => {
-    const {errors} = run('this is not a meow program!!!');
+  it('reports a parser error for invalid .meow source', async () => {
+    const {errors} = await run('this is not a meow program!!!');
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/Parser/);
   });
 
-  it('reports a runtime error when an operand index is out of bounds', () => {
+  it('reports a runtime error when an operand index is out of bounds', async () => {
     // LOAD with an index that exceeds the list length.
-    const {errors} = runList([4, 99]);
+    const {errors} = await runList([4, 99]);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/Interpreter/);
   });
 
-  it('reports a runtime error when PUSH/LOAD has no operand', () => {
+  it('reports a runtime error when PUSH/LOAD has no operand', async () => {
     // PUSH with no following element.
-    const {errors} = runList([2]);
+    const {errors} = await runList([2]);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/Interpreter/);
   });
 
-  it('runs silently and produces no output for an empty program', () => {
-    const {cats, newlines, errors} = run('');
+  it('runs silently and produces no output for an empty program', async () => {
+    const {cats, newlines, errors} = await run('');
     expect(cats).toHaveLength(0);
     expect(newlines).toHaveLength(0);
     expect(errors).toHaveLength(0);
@@ -334,11 +372,12 @@ describe('runMeowLang — error handling', () => {
 // ─── runMeowLang — runtimeListener ───────────────────────────────────────────
 
 describe('runMeowLang — runtimeListener', () => {
-  it('receives one event per instruction plus a final end event', () => {
+  it('receives one event per instruction plus a final end event', async () => {
     /** @type {import('../src/meowlang.js').RuntimeInfo[]} */
     const events = [];
-    runMeowLang(
+    await runMeowLang(
         '0\n0\n', // two RET instructions
+        undefined, undefined, undefined,
         undefined, undefined, undefined,
         (info) => events.push(info),
     );
@@ -349,11 +388,12 @@ describe('runMeowLang — runtimeListener', () => {
     expect(events[2].ip).toBeUndefined();
   });
 
-  it('reports correct opcode and opname for each instruction', () => {
+  it('reports correct opcode and opname for each instruction', async () => {
     /** @type {import('../src/meowlang.js').RuntimeInfo[]} */
     const events = [];
-    runMeowLang(
+    await runMeowLang(
         '2\n3\n1\n', // PUSH 3, MEOW
+        undefined, undefined, undefined,
         undefined, undefined, undefined,
         (info) => events.push(info),
     );
@@ -368,30 +408,30 @@ describe('runMeowLang — runtimeListener', () => {
 // ─── runMeowLang — example programs (integration) ────────────────────────────
 
 describe('runMeowLang — example programs', () => {
-  it('hello: prints exactly 3 cat emojis, no newlines', () => {
+  it('hello: prints exactly 3 cat emojis, no newlines', async () => {
     // hello.smeow = [1, 1, 1]: three MEOW instructions with tail value 1 each.
-    const {cats, newlines} = runList([1, 1, 1]);
+    const {cats, newlines} = await runList([1, 1, 1]);
     expect(cats).toHaveLength(3);
     expect(newlines).toHaveLength(0);
   });
 
-  it('cat: prints 20 cat emojis followed by one newline', () => {
+  it('cat: prints 20 cat emojis followed by one newline', async () => {
     // cat.smeow = [2, 20, 1, 3, 0]: PUSH 20, MEOW, POP, RET.
-    const {cats, newlines} = runList([2, 20, 1, 3, 0]);
+    const {cats, newlines} = await runList([2, 20, 1, 3, 0]);
     expect(cats).toHaveLength(20);
     expect(newlines).toHaveLength(1);
   });
 
-  it('sum: pushes 5+5, prints 10 cats, then a newline', () => {
+  it('sum: pushes 5+5, prints 10 cats, then a newline', async () => {
     // sum.smeow = [2, 5, 2, 5, 6, 1, 3, 0].
-    const {cats, newlines} = runList([2, 5, 2, 5, 6, 1, 3, 0]);
+    const {cats, newlines} = await runList([2, 5, 2, 5, 6, 1, 3, 0]);
     expect(cats).toHaveLength(10);
     expect(newlines).toHaveLength(1);
   });
 
-  it('countdown: prints 10 lines with 10, 9, … 1 cats each', () => {
+  it('countdown: prints 10 lines with 10, 9, … 1 cats each', async () => {
     // countdown.smeow = [8,3,10,4,2,1,0,2,1,7,5,2,9,17,3,8,3,3,10].
-    const {cats, newlines} = runList(
+    const {cats, newlines} = await runList(
         [8, 3, 10, 4, 2, 1, 0, 2, 1, 7, 5, 2, 9, 17, 3, 8, 3, 3, 10]);
     // Lines 10, 9, 8, … 1 → total cats = 10+9+…+1 = 55.
     expect(cats).toHaveLength(55);
@@ -399,13 +439,13 @@ describe('runMeowLang — example programs', () => {
   });
 
   it('fibonacci: generates correct Fibonacci sequence for the first 10 terms',
-      () => {
+      async () => {
         // fibonacci.smeow content from examples/.
         const fibSmeow = [
           8, 4, 1, 1, 2, 10, 4, 2, 1, 0, 3, 4, 2, 4, 3, 6, 4,
           3, 5, 2, 3, 5, 3, 3, 2, 1, 7, 9, 31, 8, 6, 3, 10,
         ];
-        const {cats, newlines} = runList(fibSmeow);
+        const {cats, newlines} = await runList(fibSmeow);
         // Fibonacci: 1,1,2,3,5,8,13,21,34,55 — sum = 143 cats total.
         expect(cats).toHaveLength(143);
         expect(newlines).toHaveLength(10);

@@ -105,13 +105,20 @@ const MEOW_PROGRAM_REGEXP =
  *     Called once per cat emoji for each MEOW instruction (opcode 1).
  *     Typically used to append a cat emoji to the output. If omitted,
  *     `console.log(CAT_EMOJI)` is used.
+ * @param {((char: string) => void) | undefined} yowlCallback
+ *     Called when a YOWL instruction (opcode 10) is executed.
+ * @param {(() => Promise<number>) | undefined} sniffCallback
+ *     Called when a SNIFF instruction (opcode 11) is executed.
+ * @param {(() => void) | undefined} scratchCallback
+ *     Called when a SCRATCH instruction (opcode 13) is executed.
  * @param {((info: RuntimeInfo) => void) | undefined} runtimeListener
  *     Called after every instruction with a snapshot of interpreter state.
  *     Also called once after the last instruction with `ip` set to
  *     `undefined` to signal program end. Pass `undefined` to disable.
  */
-export function runMeowLang(code, reportErrorCallback,
+export async function runMeowLang(code, reportErrorCallback,
     retCallback, meowCallback,
+    yowlCallback, sniffCallback, scratchCallback,
     runtimeListener) {
   const reportError = makeReportError(reportErrorCallback);
 
@@ -127,7 +134,9 @@ export function runMeowLang(code, reportErrorCallback,
   }
 
   try {
-    execute(meowList, retCallback, meowCallback, runtimeListener);
+    await execute(meowList, retCallback, meowCallback,
+        yowlCallback, sniffCallback, scratchCallback,
+        runtimeListener);
   } catch (err) {
     reportError('Interpreter', /** @type {Error} */ (err).message);
   }
@@ -236,9 +245,14 @@ function removeWhiteSpaces(str) {
  *     SAVE and growth from PUSH/LOAD).
  * @param {(() => void) | undefined} retCallback
  * @param {(() => void) | undefined} meowCallback
+ * @param {((char: string) => void) | undefined} yowlCallback
+ * @param {(() => Promise<number>) | undefined} sniffCallback
+ * @param {(() => void) | undefined} scratchCallback
  * @param {((info: RuntimeInfo) => void) | undefined} runtimeListener
  */
-function execute(meowList, retCallback, meowCallback, runtimeListener) {
+async function execute(meowList, retCallback, meowCallback,
+    yowlCallback, sniffCallback, scratchCallback,
+    runtimeListener) {
   // Returns the value of the element immediately after `ip` (the operand).
   // Throws if that element does not exist.
   const nextOperand = (/** @type {number} */ ip) => {
@@ -256,12 +270,16 @@ function execute(meowList, retCallback, meowCallback, runtimeListener) {
     }
   };
 
+  // Helper for NAP (sleep) opcode.
+  const sleep = (/** @type {number} */ ms) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
   /**
    * @typedef {Object} Instruction
    * @property {string} opname
    * @property {(ip: number) => number | undefined} getOperand
    *     Returns the operand value for display, or undefined if none.
-   * @property {(ip: number) => number} action
+   * @property {(ip: number) => number | Promise<number>} action
    *     Executes the instruction and returns the next IP value.
    */
 
@@ -379,7 +397,47 @@ function execute(meowList, retCallback, meowCallback, runtimeListener) {
       },
     },
     {
-      // ≥10: NOP — no operation.
+      // 10: YOWL — ASCII Output. Pop tail and print char.
+      opname: 'YOWL',
+      getOperand: () => undefined,
+      action: (ip) => {
+        const val = meowList.pop() ?? 0;
+        const char = String.fromCharCode(val);
+        yowlCallback != undefined ? yowlCallback(char) : process.stdout.write(char);
+        return ip + 1;
+      },
+    },
+    {
+      // 11: SNIFF — ASCII Input. Push input char ASCII code to tail.
+      opname: 'SNIFF',
+      getOperand: () => undefined,
+      action: async (ip) => {
+        const val = sniffCallback != undefined ? await sniffCallback() : 0;
+        meowList.push(val);
+        return ip + 1;
+      },
+    },
+    {
+      // 12: NAP N — Sleep. Pop tail and pause for N milliseconds.
+      opname: 'NAP',
+      getOperand: () => undefined,
+      action: async (ip) => {
+        const ms = meowList.pop() ?? 0;
+        await sleep(ms);
+        return ip + 1;
+      },
+    },
+    {
+      // 13: SCRATCH — Clear Screen.
+      opname: 'SCRATCH',
+      getOperand: () => undefined,
+      action: (ip) => {
+        scratchCallback != undefined ? scratchCallback() : console.clear();
+        return ip + 1;
+      },
+    },
+    {
+      // ≥14: NOP — no operation.
       opname: 'NOP',
       getOperand: () => undefined,
       action: (ip) => ip + 1,
@@ -404,7 +462,7 @@ function execute(meowList, retCallback, meowCallback, runtimeListener) {
       });
     }
 
-    ip = instr.action(ip);
+    ip = await instr.action(ip);
   }
 
   // Final notification: signals that execution has ended.

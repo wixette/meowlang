@@ -25,7 +25,13 @@ import {
  *
  * @param {string} code Source code in .meow or .smeow format.
  * @param {number} [sniffValue=0] The value to return for SNIFF.
- * @return {Promise<{ cats: string[], newlines: string[], errors: string[], yowls: string[], scratchedCount: number }>}
+ * @return {Promise<{
+ *   cats: string[],
+ *   newlines: string[],
+ *   errors: string[],
+ *   yowls: string[],
+ *   scratchedCount: number
+ * }>}
  */
 async function run(code, sniffValue = 0) {
   /** @type {string[]} */ const cats = [];
@@ -40,7 +46,9 @@ async function run(code, sniffValue = 0) {
       () => cats.push(CAT_EMOJI),
       (char) => yowls.push(char),
       async () => sniffValue,
-      () => { scratchedCount++; },
+      () => {
+        scratchedCount++;
+      },
       undefined,
   );
   return {cats, newlines, errors, yowls, scratchedCount};
@@ -52,7 +60,13 @@ async function run(code, sniffValue = 0) {
  *
  * @param {number[]} list
  * @param {number} [sniffValue=0] The value to return for SNIFF.
- * @return {Promise<{ cats: string[], newlines: string[], errors: string[], yowls: string[], scratchedCount: number }>}
+ * @return {Promise<{
+ *   cats: string[],
+ *   newlines: string[],
+ *   errors: string[],
+ *   yowls: string[],
+ *   scratchedCount: number
+ * }>}
  */
 async function runList(list, sniffValue = 0) {
   return await run(list.join('\n'), sniffValue);
@@ -273,14 +287,15 @@ describe('runMeowLang — opcodes', () => {
   });
 
   // ── JMP (8) ──────────────────────────────────────────────────────────────
-  it('JMP (8): jumps unconditionally, skipping elements in between', async () => {
-    // [8, 4, 0, 10, 2, 1, 1, 3, 0]
-    // JMP→4 skips the RET at [2]; PUSH 1, MEOW, POP, RET.
-    // Without JMP we'd get 2 newlines (from [2] and [8]); with JMP, 1.
-    const {newlines, cats} = await runList([8, 4, 0, 10, 2, 1, 1, 3, 0]);
-    expect(newlines).toHaveLength(1);
-    expect(cats).toHaveLength(1);
-  });
+  it('JMP (8): jumps unconditionally, skipping elements in between',
+      async () => {
+        // [8, 4, 0, 10, 2, 1, 1, 3, 0]
+        // JMP→4 skips the RET at [2]; PUSH 1, MEOW, POP, RET.
+        // Without JMP we'd get 2 newlines (from [2] and [8]); with JMP, 1.
+        const {newlines, cats} = await runList([8, 4, 0, 10, 2, 1, 1, 3, 0]);
+        expect(newlines).toHaveLength(1);
+        expect(cats).toHaveLength(1);
+      });
 
   // ── JE (9) ───────────────────────────────────────────────────────────────
   it('JE (9): jumps to N when tail is 0', async () => {
@@ -316,11 +331,12 @@ describe('runMeowLang — 0.4.0 opcodes', () => {
   });
 
   // ── SNIFF (11) ───────────────────────────────────────────────────────────
-  it('SNIFF (11): pushes the input character value onto the tail', async () => {
-    // SNIFF (returns 42), MEOW.
-    const {cats} = await runList([11, 1], 42);
-    expect(cats).toHaveLength(42);
-  });
+  it('SNIFF (11): pushes the input character value onto the tail',
+      async () => {
+        // SNIFF (returns 42), MEOW.
+        const {cats} = await runList([11, 1], 42);
+        expect(cats).toHaveLength(42);
+      });
 
   // ── NAP (12) ─────────────────────────────────────────────────────────────
   it('NAP (12): pauses execution for T milliseconds', async () => {
@@ -347,12 +363,13 @@ describe('runMeowLang — error handling', () => {
     expect(errors[0]).toMatch(/Parser/);
   });
 
-  it('reports a runtime error when an operand index is out of bounds', async () => {
-    // LOAD with an index that exceeds the list length.
-    const {errors} = await runList([4, 99]);
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/Interpreter/);
-  });
+  it('reports a runtime error when an operand index is out of bounds',
+      async () => {
+        // LOAD with an index that exceeds the list length.
+        const {errors} = await runList([4, 99]);
+        expect(errors).toHaveLength(1);
+        expect(errors[0]).toMatch(/Interpreter/);
+      });
 
   it('reports a runtime error when PUSH/LOAD has no operand', async () => {
     // PUSH with no following element.
@@ -361,32 +378,34 @@ describe('runMeowLang — error handling', () => {
     expect(errors[0]).toMatch(/Interpreter/);
   });
 
-  it('runs silently and produces no output for an empty program', async () => {
-    const {cats, newlines, errors} = await run('');
-    expect(cats).toHaveLength(0);
-    expect(newlines).toHaveLength(0);
-    expect(errors).toHaveLength(0);
-  });
+  it('runs silently and produces no output for an empty program',
+      async () => {
+        const {cats, newlines, errors} = await run('');
+        expect(cats).toHaveLength(0);
+        expect(newlines).toHaveLength(0);
+        expect(errors).toHaveLength(0);
+      });
 });
 
 // ─── runMeowLang — runtimeListener ───────────────────────────────────────────
 
 describe('runMeowLang — runtimeListener', () => {
-  it('receives one event per instruction plus a final end event', async () => {
-    /** @type {import('../src/meowlang.js').RuntimeInfo[]} */
-    const events = [];
-    await runMeowLang(
-        '0\n0\n', // two RET instructions
-        undefined, undefined, undefined,
-        undefined, undefined, undefined,
-        (info) => events.push(info),
-    );
-    // 2 instruction events + 1 end event (ip === undefined).
-    expect(events).toHaveLength(3);
-    expect(events[0].opname).toBe('RET');
-    expect(events[1].opname).toBe('RET');
-    expect(events[2].ip).toBeUndefined();
-  });
+  it('receives one event per instruction plus a final end event',
+      async () => {
+        /** @type {import('../src/meowlang.js').RuntimeInfo[]} */
+        const events = [];
+        await runMeowLang(
+            '0\n0\n', // two RET instructions
+            undefined, undefined, undefined,
+            undefined, undefined, undefined,
+            (info) => events.push(info),
+        );
+        // 2 instruction events + 1 end event (ip === undefined).
+        expect(events).toHaveLength(3);
+        expect(events[0].opname).toBe('RET');
+        expect(events[1].opname).toBe('RET');
+        expect(events[2].ip).toBeUndefined();
+      });
 
   it('reports correct opcode and opname for each instruction', async () => {
     /** @type {import('../src/meowlang.js').RuntimeInfo[]} */

@@ -25,7 +25,6 @@
  */
 
 import fs from 'fs';
-import readline from 'readline';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {runMeowLang, CAT_EMOJI} from './meowlang.js';
@@ -48,11 +47,6 @@ const argv = yargs(hideBin(process.argv))
  * @return {() => Promise<number>}
  */
 function makeSniffCallback() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    terminal: false,
-  });
-
   return () => new Promise((resolve) => {
     // We want to read exactly one character.
     // Node's stdin in raw mode is better for this.

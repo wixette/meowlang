@@ -1,4 +1,4 @@
-// Moving Cat Game (Robust Version)
+// Moving Cat Game (Perfectly Stack-Safe Version)
 8    // [0] JMP
 3    // [1] to index 3
 0    // [2] Variable: x position
@@ -7,33 +7,36 @@
 2    // [5] x from index 2
 2    // [6] PUSH
 32   // [7] ASCII Space
-10   // [8] YOWL (Print space)
+10   // [8] YOWL (Pops the Space)
 2    // [9] PUSH
 1    // [10] 1
-7    // [11] SUB
+7    // [11] SUB (Subtract 1 from x)
 9    // [12] JE
 16   // [13] to index 16 (Exit space loop)
 8    // [14] JMP
-8    // [15] back to YOWL
-1    // [16] MEOW (Print cat at x)
-0    // [17] RET (Newline)
-2    // [18] PUSH
-100    // [19] 100ms
-12   // [20] NAP
-4    // [21] LOAD
-2    // [22] x from index 2
-2    // [23] PUSH
-1    // [24] 1
-6    // [25] ADD
-5    // [26] SAVE
-2    // [27] to x at index 2
-2    // [28] PUSH
-20   // [29] Max x = 20
-4    // [30] LOAD
-2    // [31] x
-7    // [32] SUB
-9    // [33] JE
-37   // [34] to index 37 (End)
-8    // [35] JMP
-3    // [36] to START
-0    // [37] RET (End)
+8    // [15] back to YOWL at index 8
+3    // [16] POP (Pops the 0 from JE)
+1    // [17] MEOW (Print cat at current x)
+0    // [18] RET (Newline)
+2    // [19] PUSH
+100  // [20] 100ms
+12   // [21] NAP (Pops 100)
+4    // [22] LOAD
+2    // [23] x from index 2
+2    // [24] PUSH
+1    // [25] 1
+6    // [26] ADD
+5    // [27] SAVE (Doesn't pop)
+2    // [28] to index 2
+2    // [29] PUSH
+20   // [30] Max x = 20
+4    // [31] LOAD
+2    // [32] x from index 2
+7    // [33] SUB (Result of 20 - x)
+9    // [34] JE
+40   // [35] to index 40 (End)
+3    // [36] POP (Pop the SUB result)
+8    // [37] JMP
+3    // [38] to START at index 3
+3    // [39] POP (Pop the 0 for JE jump)
+0    // [40] RET (End)

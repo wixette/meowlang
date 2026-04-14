@@ -5,19 +5,21 @@
 2    // [4] index 2
 1    // [5] MEOW
 0    // [6] RET
-2    // [7] PUSH
-1000 // [8] 1000ms
-12   // [9] NAP
-4    // [10] LOAD
-2    // [11] index 2
-2    // [12] PUSH
-1    // [13] 1
-7    // [14] SUB
-5    // [15] SAVE
-2    // [16] index 2
-9    // [17] JE
-22   // [18] to index 22 (End)
-3    // [19] POP (Clean up stack)
-8    // [20] JMP
-3    // [21] to index 3
-0    // [22] RET (Final Newline)
+3    // [7] POP (Clean up LOAD)
+2    // [8] PUSH
+1000 // [9] 1000ms
+12   // [10] NAP (NAP pops the 1000)
+4    // [11] LOAD
+2    // [12] index 2
+2    // [13] PUSH
+1    // [14] 1
+7    // [15] SUB
+5    // [16] SAVE (SAVE does not pop)
+2    // [17] index 2
+9    // [18] JE
+23   // [19] to index 23 (End)
+3    // [20] POP (Clean up SUB result)
+8    // [21] JMP
+3    // [22] to index 3
+3    // [23] POP (Clean up SUB result for JE jump)
+0    // [24] RET (Final Newline)

@@ -1,0 +1,34 @@
+// Moving Cat Game
+// E(2): x position
+// E(3): direction (1=Right, 0=Left) - simplified for now
+2
+0    // E(2) x=0
+2
+1    // E(3) dir=1
+10   // START at index 4
+13   // SCRATCH (Clear)
+4
+2    // LOAD x
+2
+32   // Space
+10   // YOWL (Print space)
+2
+1
+7    // SUB
+9
+15   // If x=0, skip space loop
+8
+8    // JMP to print space
+1    // MEOW (Print cat at x)
+2
+100
+12   // NAP 100ms
+4
+2    // LOAD x
+2
+1
+6    // ADD
+5
+2    // x = x + 1
+8
+4    // JMP START

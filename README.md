@@ -240,19 +240,23 @@ The preferred file extension of the simplified Meow file format is `".smeow"`.
 
 ### Meow Instruction Set
 
-| Opcode | Name | Description | `IP` Operation |
-|--------|------|-------------|----------------|
-| 0 | `RET` | Print an empty line `"\n"` to the output console. | `IP++` |
-| 1 | `MEOW` | Print `T` cat emoji characters to the output console. | `IP++` |
-| 2 | `PUSH` | Push `N` to the tail of the Meow List. | `IP += 2` |
-| 3 | `POP` | Pop the tail element from the Meow List. | `IP++` |
-| 4 | `LOAD` | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
-| 5 | `SAVE` | Copy the value of the tail element to `E(N)`. | `IP += 2` |
-| 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
-| 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
-| 8 | `JMP` | Set `IP` to `N`. | `IP = N` |
-| 9 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, skip the operand and continue execution. | `IP = (T == 0) ? N : IP + 2` |
-| >=10 | `NOP` | No operation. | `IP++` |
+| Opcode | Name | Cat Behavior | Description | `IP` Operation |
+|--------|------|--------------|-------------|----------------|
+| 0 | `RET` | - | Print an empty line `"\n"` to the output console. | `IP++` |
+| 1 | `MEOW` | - | Print `T` cat emoji characters to the output console. | `IP++` |
+| 2 | `PUSH` | - | Push `N` to the tail of the Meow List. | `IP += 2` |
+| 3 | `POP` | - | Pop the tail element from the Meow List. | `IP++` |
+| 4 | `LOAD` | - | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
+| 5 | `SAVE` | - | Copy the value of the tail element to `E(N)`. | `IP += 2` |
+| 6 | `ADD` | - | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
+| 7 | `SUB` | - | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
+| 8 | `JMP` | - | Set `IP` to `N`. | `IP = N` |
+| 9 | `JE` | - | If the value of the tail element is zero, set `IP` to `N`. Otherwise, skip the operand and continue execution. | `IP = (T == 0) ? N : IP + 2` |
+| 10 | `YOWL` | A loud sound. | **ASCII Output**: Pop the tail value and print the corresponding ASCII character. | `IP++` |
+| 11 | `SNIFF` | Detecting a scent. | **ASCII Input**: Read one character from `stdin` and push its ASCII code to the tail. | `IP++` |
+| 12 | `NAP` | A cat's rest. | **Sleep**: Pop the tail value and pause for that many milliseconds. | `IP++` |
+| 13 | `SCRATCH` | Cleaning territory. | **Clear Screen**: Clear the output console/screen. | `IP++` |
+| >=14 | `NOP` | - | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.
 * `T`: The value of the tail element.

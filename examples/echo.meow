@@ -1,12 +1,7 @@
-// Echoes input character by character
-// 0: SNIFF (reads char to tail)
-// 1: JE 8 (if char is 0, jump to end)
-// 2: YOWL (print char from tail)
-// 3: JMP 0 (loop back)
-// 4: RET (end)
-
-SNIFF;
-JE 8;
-YOWL;
-JMP 0;
-RET;
+MeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
+MeowMeowMeowMeowMeowMeowMeowMeow;
+;
+;

@@ -125,9 +125,11 @@ export async function runMeowLang(code, reportErrorCallback,
   /** @type {number[] | null} */
   let meowList = null;
   try {
-    meowList = code.search(/[0-9]/) >= 0 ?
-        parseSimplified(code) :
-        parseMeow(code);
+    // If it contains semicolons, it's likely the .meow token format.
+    // Otherwise, if it contains any digit, assume .smeow format.
+    meowList = code.includes(SEP_TOKEN) || code.includes(SEP_TOKEN_ZH) ?
+        parseMeow(code) :
+        (code.search(/[0-9]/) >= 0 ? parseSimplified(code) : []);
   } catch (err) {
     reportError('Parser', /** @type {Error} */ (err).message);
     return;

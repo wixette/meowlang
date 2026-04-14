@@ -182,7 +182,9 @@ export function parseSimplified(code) {
   /** @type {number[]} */
   const meowList = [];
   for (const line of lines) {
-    const token = removeWhiteSpaces(line);
+    // Strip comments (everything after //).
+    const content = line.split('//')[0];
+    const token = removeWhiteSpaces(content);
     if (token.length === 0) continue;
     if (!token.match(/^[0-9]+$/)) {
       throw new Error(`Invalid number "${token}."`);
@@ -403,7 +405,9 @@ async function execute(meowList, retCallback, meowCallback,
       action: (ip) => {
         const val = meowList.pop() ?? 0;
         const char = String.fromCharCode(val);
-        yowlCallback != undefined ? yowlCallback(char) : process.stdout.write(char);
+        yowlCallback != undefined ?
+            yowlCallback(char) :
+            process.stdout.write(char);
         return ip + 1;
       },
     },

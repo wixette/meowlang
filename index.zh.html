@@ -59,11 +59,19 @@
       <div class="controls-bar">
         <select id="examples" title="加载示例程序">
           <option value="">加载示例…</option>
-          <option value="examples/cat.zh.meow">猫咪（Cat）</option>
-          <option value="examples/hello.zh.meow">你好（Hello）</option>
-          <option value="examples/countdown.zh.meow">倒计时（Countdown）</option>
-          <option value="examples/sum.zh.meow">求和（Sum）</option>
-          <option value="examples/fibonacci.zh.meow">斐波那契（Fibonacci）</option>
+          <optgroup label="核心 (0.3.0)">
+            <option value="examples/cat.zh.meow">猫咪 (Cat)</option>
+            <option value="examples/hello.zh.meow">你好 (Hello)</option>
+            <option value="examples/countdown.zh.meow">倒计时 (Countdown)</option>
+            <option value="examples/sum.zh.meow">求和 (Sum)</option>
+            <option value="examples/fibonacci.zh.meow">斐波那契 (Fibonacci)</option>
+          </optgroup>
+          <optgroup label="感官 (0.4.0)">
+            <option value="examples/hello_ascii.zh.meow">你好 (ASCII)</option>
+            <option value="examples/echo.zh.meow">回声 (I/O)</option>
+            <option value="examples/timer.zh.meow">计时器 (NAP)</option>
+            <option value="examples/moving_cat.zh.meow">移动的猫 (SCRATCH)</option>
+          </optgroup>
         </select>
         <button id="run" class="btn">
           <i class="material-icons left">play_arrow</i>运行

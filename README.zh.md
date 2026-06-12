@@ -140,6 +140,63 @@ MeowMeowMeowMeowMeowMeowMeowMeowMeowMeow;
 喵喵喵喵喵喵喵喵喵喵;
 ```
 
+### Hello, World!（用 YOWL 输出 ASCII 字符）
+
+[hello_ascii.meow](examples/hello_ascii.meow) 演示了 **YOWL** 指令（操作码 10）的用法。
+YOWL 弹出列表尾部的值，并打印对应的 ASCII 字符。该程序通过依次压入每个字符的 ASCII
+码并调用 YOWL，打印出 `Hello, World!`：
+
+```text
+2    // PUSH
+72   // 'H' = 72
+10   // YOWL → 打印 'H'
+2    // PUSH
+101  // 'e' = 101
+10   // YOWL → 打印 'e'
+...  // （以此类推，逐字符处理）
+0    // RET → 换行
+```
+
+运行方式：
+
+```shell
+node . -i examples/hello_ascii.meow
+```
+
+### 回声（用 SNIFF 和 YOWL 实现字符输入输出）
+
+[echo.meow](examples/echo.meow) 演示了 **SNIFF** 指令（操作码 11）的用法。
+SNIFF 从标准输入读取一个字符，并将其 ASCII 码压入列表尾部。配合 YOWL 可以构成一个
+实时字符回声循环：每次按键后，字符会立即被输出到终端。按 **Ctrl+D** 结束输入。
+
+```text
+11 // [0] SNIFF — 从标准输入读取一个字符，压入其编码
+9  // [1] JE
+6  // [2] → 跳转到索引 6（编码为 0 时退出）
+10 // [3] YOWL  — 弹出编码并打印字符
+8  // [4] JMP
+0  // [5] → 跳转到索引 0（循环）
+0  // [6] RET   — 打印最终换行符并退出
+```
+
+运行方式：
+
+```shell
+node . -i examples/echo.meow
+```
+
+### 移动的猫（用 NAP 和 SCRATCH 实现动画）
+
+[moving_cat.meow](examples/moving_cat.meow) 演示了 **NAP** 指令（操作码 12，暂停执行
+N 毫秒）和 **SCRATCH** 指令（操作码 13，清屏）的用法。两者配合，使一只 🐈 表情符号
+在终端屏幕上滑动，每帧之间有 100 毫秒的延迟。
+
+运行方式：
+
+```shell
+node . -i examples/moving_cat.meow
+```
+
 ## 喵语言（Meowlang）技术规范
 
 ### 喵列表（Meow List）

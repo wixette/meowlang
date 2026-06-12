@@ -142,6 +142,66 @@ The [Fibonacci source code](examples/fibonacci.zh.meow) in Chinese Meow:
 喵喵喵喵喵喵喵喵喵喵;
 ```
 
+### Hello, World! (ASCII output with YOWL)
+
+[hello_ascii.meow](examples/hello_ascii.meow) demonstrates the **YOWL** instruction
+(opcode 10), which pops the tail value and prints the corresponding ASCII character.
+The program prints `Hello, World!` by pushing each character's ASCII code and calling
+YOWL:
+
+```text
+2    // PUSH
+72   // 'H' = 72
+10   // YOWL → prints 'H'
+2    // PUSH
+101  // 'e' = 101
+10   // YOWL → prints 'e'
+...  // (and so on for each character)
+0    // RET → newline
+```
+
+Run it:
+
+```shell
+node . -i examples/hello_ascii.meow
+```
+
+### Echo (character I/O with SNIFF and YOWL)
+
+[echo.meow](examples/echo.meow) demonstrates the **SNIFF** instruction (opcode 11),
+which reads one character from stdin and pushes its ASCII code to the tail. Combined
+with YOWL it forms a real-time character echo loop: each key you press is immediately
+reflected back to the terminal. Press **Ctrl+D** to end input.
+
+```text
+11 // [0] SNIFF — read one char from stdin, push its code
+9  // [1] JE
+6  // [2] → index 6 (if code is 0, jump to exit)
+10 // [3] YOWL  — pop code and print the character
+8  // [4] JMP
+0  // [5] → index 0 (loop)
+0  // [6] RET   — print final newline and exit
+```
+
+Run it:
+
+```shell
+node . -i examples/echo.meow
+```
+
+### Moving Cat (animation with NAP and SCRATCH)
+
+[moving_cat.meow](examples/moving_cat.meow) demonstrates the **NAP** instruction
+(opcode 12), which pauses execution for N milliseconds, and the **SCRATCH** instruction
+(opcode 13), which clears the screen. Together they animate a 🐈 emoji gliding across
+the terminal with a 100 ms delay between frames.
+
+Run it:
+
+```shell
+node . -i examples/moving_cat.meow
+```
+
 ## Language Specification
 
 ### Meow List

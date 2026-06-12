@@ -72,12 +72,22 @@ if (argv.input) {
             rawModeSet = true;
           }
           process.stdin.once('data', (data) => {
-            // Ctrl+C sends byte 3 in raw mode (no SIGINT).
-            if (data[0] === 3) {
+            const byte = data[0];
+            // Ctrl+C (byte 3) — no SIGINT in raw mode, so exit explicitly.
+            if (byte === 3) {
               if (process.stdin.setRawMode) process.stdin.setRawMode(wasRaw);
               process.exit();
             }
-            resolve(data[0]);
+            // Ctrl+D (byte 4) — EOF signal; resolve 0 so programs that loop
+            // on SNIFF (like echo.meow) can exit cleanly.
+            if (byte === 4) {
+              resolve(0);
+              return;
+            }
+            // Normalize CR (byte 13, the Enter key in raw mode) to LF (byte
+            // 10). Without this, YOWL would write a bare carriage return that
+            // snaps the cursor back to column 0 and overwrites prior output.
+            resolve(byte === 13 ? 10 : byte);
           });
         }),
         () => {

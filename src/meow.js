@@ -42,34 +42,12 @@ const argv = yargs(hideBin(process.argv))
     })
     .argv;
 
-/**
- * Creates a sniff callback that reads a single character from stdin.
- * @return {() => Promise<number>}
- */
-function makeSniffCallback() {
-  return () => new Promise((resolve) => {
-    // We want to read exactly one character.
-    // Node's stdin in raw mode is better for this.
-    const wasRaw = process.stdin.isRaw;
-    if (process.stdin.setRawMode) {
-      process.stdin.setRawMode(true);
-    }
-    process.stdin.once('data', (data) => {
-      if (process.stdin.setRawMode) {
-        process.stdin.setRawMode(wasRaw);
-      }
-      // If Ctrl+C, exit.
-      if (data[0] === 3) {
-        process.exit();
-      }
-      resolve(data[0]);
-    });
-  });
-}
-
 if (argv.input) {
   const code = fs.readFileSync(/** @type {string} */ (argv.input), 'utf8');
   (async () => {
+    const wasRaw = process.stdin.isRaw;
+    let rawModeSet = false;
+
     await runMeowLang(
         code,
         (message) => {
@@ -84,7 +62,24 @@ if (argv.input) {
         (char) => {
           process.stdout.write(char);
         },
-        makeSniffCallback(),
+        () => new Promise((resolve) => {
+          // Enable raw mode on the first SNIFF and leave it on for the entire
+          // program. Toggling raw mode per character creates a brief window
+          // where the terminal re-enables local echo, causing typed characters
+          // to appear doubled on screen alongside the YOWL output.
+          if (!rawModeSet && process.stdin.setRawMode) {
+            process.stdin.setRawMode(true);
+            rawModeSet = true;
+          }
+          process.stdin.once('data', (data) => {
+            // Ctrl+C sends byte 3 in raw mode (no SIGINT).
+            if (data[0] === 3) {
+              if (process.stdin.setRawMode) process.stdin.setRawMode(wasRaw);
+              process.exit();
+            }
+            resolve(data[0]);
+          });
+        }),
         () => {
           console.clear();
         },
@@ -93,5 +88,10 @@ if (argv.input) {
               console.log(info);
             } :
             undefined);
+
+    // Restore the original terminal mode after the program finishes.
+    if (rawModeSet && process.stdin.setRawMode) {
+      process.stdin.setRawMode(wasRaw);
+    }
   })();
 }

@@ -142,6 +142,66 @@ The [Fibonacci source code](examples/fibonacci.zh.meow) in Chinese Meow:
 喵喵喵喵喵喵喵喵喵喵;
 ```
 
+### Hello, World! (ASCII output with YOWL)
+
+[hello_ascii.meow](examples/hello_ascii.meow) demonstrates the **YOWL** instruction
+(opcode 10), which pops the tail value and prints the corresponding ASCII character.
+The program prints `Hello, World!` by pushing each character's ASCII code and calling
+YOWL:
+
+```text
+2    // PUSH
+72   // 'H' = 72
+10   // YOWL → prints 'H'
+2    // PUSH
+101  // 'e' = 101
+10   // YOWL → prints 'e'
+...  // (and so on for each character)
+0    // RET → newline
+```
+
+Run it:
+
+```shell
+node . -i examples/hello_ascii.meow
+```
+
+### Echo (character I/O with SNIFF and YOWL)
+
+[echo.meow](examples/echo.meow) demonstrates the **SNIFF** instruction (opcode 11),
+which reads one character from stdin and pushes its ASCII code to the tail. Combined
+with YOWL it forms a real-time character echo loop: each key you press is immediately
+reflected back to the terminal. Press **Ctrl+D** to end input.
+
+```text
+11 // [0] SNIFF — read one char from stdin, push its code
+9  // [1] JE
+6  // [2] → index 6 (if code is 0, jump to exit)
+10 // [3] YOWL  — pop code and print the character
+8  // [4] JMP
+0  // [5] → index 0 (loop)
+0  // [6] RET   — print final newline and exit
+```
+
+Run it:
+
+```shell
+node . -i examples/echo.meow
+```
+
+### Moving Cat (animation with NAP and SCRATCH)
+
+[moving_cat.meow](examples/moving_cat.meow) demonstrates the **NAP** instruction
+(opcode 12), which pauses execution for N milliseconds, and the **SCRATCH** instruction
+(opcode 13), which clears the screen. Together they animate a 🐈 emoji gliding across
+the terminal with a 100 ms delay between frames.
+
+Run it:
+
+```shell
+node . -i examples/moving_cat.meow
+```
+
 ## Language Specification
 
 ### Meow List
@@ -240,19 +300,23 @@ The preferred file extension of the simplified Meow file format is `".smeow"`.
 
 ### Meow Instruction Set
 
-| Opcode | Name | Description | `IP` Operation |
-|--------|------|-------------|----------------|
-| 0 | `RET` | Print an empty line `"\n"` to the output console. | `IP++` |
-| 1 | `MEOW` | Print `T` cat emoji characters to the output console. | `IP++` |
-| 2 | `PUSH` | Push `N` to the tail of the Meow List. | `IP += 2` |
-| 3 | `POP` | Pop the tail element from the Meow List. | `IP++` |
-| 4 | `LOAD` | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
-| 5 | `SAVE` | Copy the value of the tail element to `E(N)`. | `IP += 2` |
-| 6 | `ADD` | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
-| 7 | `SUB` | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
-| 8 | `JMP` | Set `IP` to `N`. | `IP = N` |
-| 9 | `JE` | If the value of the tail element is zero, set `IP` to `N`. Otherwise, skip the operand and continue execution. | `IP = (T == 0) ? N : IP + 2` |
-| >=10 | `NOP` | No operation. | `IP++` |
+| Opcode | Name | Cat Behavior | Description | `IP` Operation |
+|--------|------|--------------|-------------|----------------|
+| 0 | `RET` | - | Print an empty line `"\n"` to the output console. | `IP++` |
+| 1 | `MEOW` | - | Print `T` cat emoji characters to the output console. | `IP++` |
+| 2 | `PUSH` | - | Push `N` to the tail of the Meow List. | `IP += 2` |
+| 3 | `POP` | - | Pop the tail element from the Meow List. | `IP++` |
+| 4 | `LOAD` | - | Push the value of `E(N)` to the tail of the Meow List. | `IP += 2` |
+| 5 | `SAVE` | - | Copy the value of the tail element to `E(N)`. | `IP += 2` |
+| 6 | `ADD` | - | Add the values of the last two tail elements, pop them from the tail, then push the result to the tail. | `IP++` |
+| 7 | `SUB` | - | Subtract the value of the last element from the value of the second to the last element, pop the last two elements from the tail, then push the result to the tail. If the result is negative, a zero is pushed. | `IP++` |
+| 8 | `JMP` | - | Set `IP` to `N`. | `IP = N` |
+| 9 | `JE` | - | If the value of the tail element is zero, set `IP` to `N`. Otherwise, skip the operand and continue execution. | `IP = (T == 0) ? N : IP + 2` |
+| 10 | `YOWL` | A loud sound. | **ASCII Output**: Pop the tail value and print the corresponding ASCII character. | `IP++` |
+| 11 | `SNIFF` | Detecting a scent. | **ASCII Input**: Read one character from `stdin` and push its ASCII code to the tail. | `IP++` |
+| 12 | `NAP` | A cat's rest. | **Sleep**: Pop the tail value and pause for that many milliseconds. | `IP++` |
+| 13 | `SCRATCH` | Cleaning territory. | **Clear Screen**: Clear the output console/screen. | `IP++` |
+| >=14 | `NOP` | - | No operation. | `IP++` |
 
 * `IP`: The Instruction Pointer.
 * `T`: The value of the tail element.

@@ -54,10 +54,14 @@
         <select id="examples" title="Load an example program">
           <option value="">Load an example…</option>
           <option value="examples/cat.meow">Cat</option>
-          <option value="examples/hello.meow">Hello</option>
           <option value="examples/countdown.meow">Countdown</option>
-          <option value="examples/sum.meow">Sum</option>
+          <option value="examples/echo.meow">Echo I/O</option>
           <option value="examples/fibonacci.meow">Fibonacci</option>
+          <option value="examples/hello.meow">Hello</option>
+          <option value="examples/hello_ascii.meow">Hello ASCII</option>
+          <option value="examples/moving_cat.meow">Moving Cat</option>
+          <option value="examples/sum.meow">Sum</option>
+          <option value="examples/timer.meow">Timer</option>
         </select>
         <button id="run" class="btn">
           <i class="material-icons left">play_arrow</i>Run
@@ -128,20 +132,41 @@
           });
 
       // Run the program currently in the editor.
-      document.getElementById('run').addEventListener('click', () => {
+      document.getElementById('run').addEventListener('click', async () => {
         debug.innerHTML = '';
-        output.innerHTML = '';
-        runMeowLang(
+        output.innerText = '';
+        await runMeowLang(
             inputBox.value,
             (error) => {
               debug.innerHTML =
                   `<span class="debug-error">${error}</span>`;
             },
-            () => {
-              output.innerHTML += '<br>';
+            async () => {
+              output.innerText += '\n';
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
-            () => {
-              output.innerHTML += '🐈';
+            async () => {
+              output.innerText += '🐈';
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
+            },
+            async (char) => {
+              output.innerText += char;
+              // Yield to allow the browser to paint the new content.
+              await new Promise((resolve) => setTimeout(resolve, 0));
+            },
+            async () => {
+              // Yield to ensure previous outputs are painted before the blocking prompt.
+              await new Promise((resolve) => setTimeout(resolve, 0));
+              const result = prompt(
+                  'Meow is SNIFFing (enter one character):\n' +
+                  'Leave empty or click Cancel to send a 0 (usually ends the loop).');
+              return result ? result.charCodeAt(0) : 0;
+            },
+            async () => {
+              output.innerText = '';
+              await new Promise((resolve) => setTimeout(resolve, 0));
             },
             (info) => {
               if (!debugSwitch.checked) return;

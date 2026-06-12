@@ -44,20 +44,64 @@ const argv = yargs(hideBin(process.argv))
 
 if (argv.input) {
   const code = fs.readFileSync(/** @type {string} */ (argv.input), 'utf8');
-  runMeowLang(
-      code,
-      (message) => {
-        console.error(message);
-      },
-      () => {
-        process.stdout.write('\n');
-      },
-      () => {
-        process.stdout.write(CAT_EMOJI);
-      },
-      argv.debug ?
-          (info) => {
-            console.log(info);
-          } :
-          undefined);
+  (async () => {
+    const wasRaw = process.stdin.isRaw;
+    let rawModeSet = false;
+
+    await runMeowLang(
+        code,
+        (message) => {
+          console.error(message);
+        },
+        () => {
+          process.stdout.write('\n');
+        },
+        () => {
+          process.stdout.write(CAT_EMOJI);
+        },
+        (char) => {
+          process.stdout.write(char);
+        },
+        () => new Promise((resolve) => {
+          // Enable raw mode on the first SNIFF and leave it on for the entire
+          // program. Toggling raw mode per character creates a brief window
+          // where the terminal re-enables local echo, causing typed characters
+          // to appear doubled on screen alongside the YOWL output.
+          if (!rawModeSet && process.stdin.setRawMode) {
+            process.stdin.setRawMode(true);
+            rawModeSet = true;
+          }
+          process.stdin.once('data', (data) => {
+            const byte = data[0];
+            // Ctrl+C (byte 3) — no SIGINT in raw mode, so exit explicitly.
+            if (byte === 3) {
+              if (process.stdin.setRawMode) process.stdin.setRawMode(wasRaw);
+              process.exit();
+            }
+            // Ctrl+D (byte 4) — EOF signal; resolve 0 so programs that loop
+            // on SNIFF (like echo.meow) can exit cleanly.
+            if (byte === 4) {
+              resolve(0);
+              return;
+            }
+            // Normalize CR (byte 13, the Enter key in raw mode) to LF (byte
+            // 10). Without this, YOWL would write a bare carriage return that
+            // snaps the cursor back to column 0 and overwrites prior output.
+            resolve(byte === 13 ? 10 : byte);
+          });
+        }),
+        () => {
+          console.clear();
+        },
+        argv.debug ?
+            (info) => {
+              console.log(info);
+            } :
+            undefined);
+
+    // Restore the original terminal mode after the program finishes.
+    if (rawModeSet && process.stdin.setRawMode) {
+      process.stdin.setRawMode(wasRaw);
+    }
+  })();
 }

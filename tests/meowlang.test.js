@@ -330,6 +330,18 @@ describe('runMeowLang — 0.4.0 opcodes', () => {
     expect(yowls).toEqual(['A']);
   });
 
+  it('YOWL (10): prints multiple characters in sequence', async () => {
+    // PUSH 72 ('H'), YOWL, PUSH 105 ('i'), YOWL.
+    const {yowls} = await runList([2, 72, 10, 2, 105, 10]);
+    expect(yowls).toEqual(['H', 'i']);
+  });
+
+  it('YOWL (10): value 0 emits the null character', async () => {
+    // PUSH 0, YOWL — should produce the null char, not crash.
+    const {yowls} = await runList([2, 0, 10]);
+    expect(yowls).toEqual(['\0']);
+  });
+
   // ── SNIFF (11) ───────────────────────────────────────────────────────────
   it('SNIFF (11): pushes the input character value onto the tail',
       async () => {
@@ -337,6 +349,20 @@ describe('runMeowLang — 0.4.0 opcodes', () => {
         const {cats} = await runList([11, 1], 42);
         expect(cats).toHaveLength(42);
       });
+
+  it('SNIFF (11): pushes 0 when no sniffCallback is provided', async () => {
+    // Call runMeowLang without a sniffCallback; SNIFF should push 0.
+    /** @type {string[]} */ const yowls = [];
+    await runMeowLang(
+        '11\n10\n', // SNIFF, YOWL — SNIFF pushes 0, YOWL prints the null char.
+        undefined, undefined, undefined,
+        (char) => yowls.push(char),
+        undefined, // no sniffCallback → should default to 0
+        undefined,
+        undefined,
+    );
+    expect(yowls).toEqual(['\0']);
+  });
 
   // ── NAP (12) ─────────────────────────────────────────────────────────────
   it('NAP (12): pauses execution for T milliseconds', async () => {
@@ -455,6 +481,58 @@ describe('runMeowLang — example programs', () => {
     // Lines 10, 9, 8, … 1 → total cats = 10+9+…+1 = 55.
     expect(cats).toHaveLength(55);
     expect(newlines).toHaveLength(10);
+  });
+
+  it('hello_ascii: prints "Hello, World!" using YOWL', async () => {
+    // hello_ascii.smeow — PUSH/YOWL pairs for each character, then RET.
+    const helloAsciiSmeow = [
+      2, 72, 10, 2, 101, 10, 2, 108, 10, 2, 108, 10, 2, 111, 10,
+      2, 44, 10, 2, 32, 10, 2, 87, 10, 2, 111, 10, 2, 114, 10,
+      2, 108, 10, 2, 100, 10, 2, 33, 10, 0,
+    ];
+    const {yowls, newlines} = await runList(helloAsciiSmeow);
+    expect(yowls.join('')).toBe('Hello, World!');
+    expect(newlines).toHaveLength(1);
+  });
+
+  it('echo: YOWLs each SNIFFed character until SNIFF returns 0', async () => {
+    // echo.smeow — SNIFF, JE→end, YOWL, JMP→start, RET.
+    // Simulate two characters ('A'=65, 'B'=66) then EOF (0).
+    const echoSmeow = [11, 9, 6, 10, 8, 0, 0];
+    const inputs = [65, 66, 0];
+    let inputIdx = 0;
+    /** @type {string[]} */ const yowls = [];
+    /** @type {string[]} */ const newlines = [];
+    await runMeowLang(
+        echoSmeow.join('\n'),
+        undefined,
+        () => newlines.push('\n'),
+        undefined,
+        (char) => yowls.push(char),
+        async () => inputs[inputIdx++] ?? 0,
+        undefined,
+        undefined,
+    );
+    expect(yowls).toEqual(['A', 'B']);
+    // The SNIFF-pushed 0 is not popped by JE, so after the RET at index 6
+    // the interpreter continues and executes that 0 as a second RET.
+    expect(newlines).toHaveLength(2);
+  });
+
+  it('timer: counts down from N printing cats each iteration', async () => {
+    // timer.smeow counts down from E(2) printing MEOW each step, with NAP.
+    // We use NAP=0ms to keep the test fast: replace the 1000 at index 9 with 0.
+    // Structure: JMP→3, [counter=3], LOAD[2], MEOW, RET, POP, PUSH 0, NAP,
+    //            LOAD[2], PUSH 1, SUB, SAVE[2], JE→23, POP, JMP→3, POP, RET.
+    const timerSmeow = [
+      8, 3, 3, 4, 2, 1, 0, 3, 2, 0, 12, 4, 2, 2, 1, 7, 5, 2, 9, 23, 3, 8, 3,
+      3, 0,
+    ];
+    const {cats, newlines} = await runList(timerSmeow);
+    // Counter starts at 3: 3 cats, 2 cats, 1 cat = 6 cats total.
+    expect(cats).toHaveLength(6);
+    // One RET per iteration (3) plus final RET = 4 newlines.
+    expect(newlines).toHaveLength(4);
   });
 
   it('fibonacci: generates correct Fibonacci sequence for the first 10 terms',

@@ -23,6 +23,7 @@
     "yargs": "^17.7.2"
   },
   "resolutions": {
-    "portfinder": "^1.0.38"
+    "portfinder": "^1.0.38",
+    "postcss": "^8.5.18"
   }
 }
